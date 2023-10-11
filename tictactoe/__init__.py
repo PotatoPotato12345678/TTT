@@ -478,7 +478,8 @@ class Gameboard(object):
         if self.debug>1:
             cv2.waitKey(0)
 
-    def _order_points(self, unordered_points):
+    #def _order_points(self, unordered_points):
+        # for 3-by-3 field
         """ Orders given points from top left, top right, bottom left, bottom right """
         pts = np.array(unordered_points,dtype=int)
         # Sort by X coordinates
@@ -486,16 +487,43 @@ class Gameboard(object):
         # Grab left-most and right-most points from the sorted x-coordinates
         leftMost = xSorted[:2, :]
         rightMost = xSorted[2:,:]
+
         # Sort left-most according to Y-coordinates to find top left and bottom left
         leftMost = leftMost[np.argsort(leftMost[:, 1]), :]
         (tl,bl) = leftMost
-        
+
         # Calculate Euclidian distance from top left anchor to bottom right anchor
         # using the Pythagorean theorem. The point with the largest distance
         # is the bottom right
         D = dist.cdist(tl[np.newaxis], rightMost, "euclidean")[0]
         (br, tr) = rightMost[np.argsort(D)[::-1], :]
         return np.array([tl,tr,bl,br], dtype=int)
+
+    def _order_points(self, unordered_points):
+        # for 4-by-4 field
+        """ Orders given points from top left, top right, bottom left, bottom right """
+        pts = np.array(unordered_points,dtype=int)
+
+        # Sort by X coordinates
+        xSorted = pts[np.argsort(pts[:,0]),:]
+        # Grab left-most and right-most points from the sorted x-coordinates
+        leftMost = xSorted[:3, :]
+        centerMost = xSorted[3:6,:]
+        rightMost = xSorted[6:,:]
+
+        # Sort left-most according to Y-coordinates to find top left and bottom left
+        leftMost = leftMost[np.argsort(leftMost[:, 1]), :]
+        (tl, ml, bl) = leftMost
+
+        centerMost = centerMost[np.argsort(centerMost[:, 1]), :]
+        (tc, mc, bc) = centerMost
+
+        # Calculate Euclidian distance from top left anchor to bottom right anchor
+        # using the Pythagorean theorem. The point with the largest distance
+        # is the bottom right
+        D = dist.cdist(tl[np.newaxis], rightMost, "euclidean")[0]
+        (br, mr, tr) = rightMost[np.argsort(D)[::-1], :]
+        return np.array([tl,tc,tr,ml,mc,mr,bl,bc,br], dtype=int)
 
     def _slope(self, a, b):
         return float((b[1]-a[1])/(b[0]-a[0]))
@@ -591,9 +619,10 @@ class Gameboard(object):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         thres, binary = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         kernel = np.array((
-            [1, 1, 1],
-            [1, 1, 1],
-            [1, 1, 1]
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1]
         ), dtype="int")
         binary = cv2.erode(binary, kernel)
         # Invert the image
@@ -622,9 +651,10 @@ class Gameboard(object):
         hori_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_length, 1))
         # A kernel of (3 X 3) ones
         kernel = np.array((
-            [1, 1, 1],
-            [1, 1, 1],
-            [1, 1, 1]), dtype="int")
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1],
+            [1, 1, 1, 1]), dtype="int")
         # Morphological operation to detect vertical lines from an image
         img_temp1 = cv2.erode(image, verticle_kernel, iterations=1)
         verticle_lines_img = cv2.dilate(img_temp1, verticle_kernel, iterations=1)
@@ -671,6 +701,8 @@ class Gameboard(object):
                 positions.append(center)
             else:
                 raise Exception("Unable to detect game board intersections. Try to adjust the weight.")
-        if (len(positions) != 4):
-            raise Exception("Unable to detect 3x3 game board")
+        #if (len(positions) != 9):
+        #    raise Exception("Unable to detect 4x4 game board")
+        #if (len(positions) != 4):
+        #    raise Exception("Unable to detect 3x3 game board")
         return Gameboard(source, image, w, positions, debug=debug)
