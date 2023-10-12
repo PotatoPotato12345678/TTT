@@ -39,16 +39,16 @@ def calibrate(exists=False):
     
     print("""
     Board Position Calibration
-            +-------+
-            | 1 2 3 | 
-            | 4 5 6 |   O1
-            | 7 8 9 |   O2
-            |       |   O3
-            |   D   |   O4
-            +-------+   O5
+            +------------+
+            | 1  2  3  4 | 
+            | 5  6  7  8 |   O1 05
+            | 9 10 11 12 |   O2 06
+            |            |   O3 07
+            |     D      |   04 08
+            +------------+   
     """)
     
-    for i in range(9):
+    for i in range(16):
         print("BOARD POSITION {0}\n----------------".format(i+1))
         print("1. Press and hold position button on Dobot.")
         print("2. Move arm manually to board position {0}. ".format(i+1))
@@ -57,7 +57,7 @@ def calibrate(exists=False):
         slot[i] = DobotPosition(p[0], p[1], p[2], p[3])
         print("Learned position {0}: {1}\n".format(i+1, slot[i]))
 
-    for i in range(5):
+    for i in range(8):
         print("BUFFER POSITION O{0}\n----------------".format(i+1))
         print("1. Press and hold position button on Dobot.")
         print("2. Move arm manually to buffer  position {0}. ".format(i+1))
@@ -116,13 +116,13 @@ def test(dobot_manager, camera, buffer, slot):
 
 def pick_and_place(dobot_manager, camera, buffer, slot):
     dm = dobot_manager
-    for i in range(5):
+    for i in range(8):
         p1 = buffer[i]
         p2 = slot[i]
         p1.pick(dm)
         p2.place(dm)
 
-    for i in range(5):
+    for i in range(8):
         p1 = buffer[i]
         p2 = slot[i]
         p2.pick(dm)
