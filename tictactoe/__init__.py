@@ -272,7 +272,6 @@ class GameEngine(object):
         #if self._gameboard != None:
         #   self._gameboard = Gameboard.update_gameboard(self._gameboard)
         self._gameboard = Gameboard.detect_game_board(image, debug=self.debug)
-        print(self._gameboard)
 
 
     def start(self, use_camera=False, gameboard_file="games/default.jpg"):
@@ -337,11 +336,12 @@ class Gameposition(object):
 
     def _process_subimage(self, positions):
         #4-by-4 field
-        (tl,tc,tr,ml,mc,mr,bl,bc,br) = tuple(positions)
-        self.startpos = list(tl)
-        self.endpos = list(br)
-        dx = int(round(dist.euclidean(tl, tr), 0))
-        dy = int(round(dist.euclidean(tl, bl), 0))
+        #(tl,tc,tr,ml,mc,mr,bl,bc,br) = tuple(positions)
+        (cc11,cc12,cc13,cc14,cc21,cc22,cc23,cc24,cc31,cc32,cc33,cc34,cc41,cc42,cc43,cc44) = tuple(positions)
+        self.startpos = list(cc11)
+        self.endpos = list(cc44)
+        dx = int(round(dist.euclidean(cc11, cc14), 0))
+        dy = int(round(dist.euclidean(cc11, cc41), 0))
 
         # NOTE: self.image.shape returns [y,x] and not [x,y]
         if (self.endpos[0] > self.image.shape[1]):
@@ -461,7 +461,7 @@ class Gameposition(object):
         
 
 class Gameboard(object):
-    boardtype = "3x3"
+    boardtype = "4x4"
     def __init__(self, img_source, img_binary, intersection_width, intersection_points, gameboard=None, debug=False):
         self.source = img_source
         self.binary = img_binary
@@ -525,7 +525,6 @@ class Gameboard(object):
 
     def _order_points(self, unordered_points):
         # for 4-by-4 field
-        """ Orders given points from top left, top right, bottom left, bottom right """
         pts = np.array(unordered_points,dtype=int)
 
         # Sort by X coordinates
@@ -599,39 +598,73 @@ class Gameboard(object):
         self.binary = cv2.bitwise_and(self.binary, mask)
 
     def _calculate_positions(self):
-        middle = self._order_points(self.intersection_points)
-        mask = self._create_mask(middle)
-        
+        intersections = self._order_points(self.intersection_points)# all intersections contain
+        middle = [intersections[0],intersections[1],intersections[4],intersections[5]]
         dx = abs(int(round(dist.euclidean(middle[0], middle[1]),0)))
         dy = abs(int(round(dist.euclidean(middle[0], middle[2]),0)))
-        w = 0 #int(self.intersection_width/2)
-        
-        offset_x_y = np.array([dx+w,dy+w])
-        offset_nx_y = np.array([-dx-w,dy+w])
-        offset_x_ny = np.array([dx+w,-dy-w])
-        offset_x = np.array([dx+w,0])
-        offset_y = np.array([0,dy+w])
+        """
+            [1,  2,  3,  4]
+            [5,  6,  7,  8]
+            [9, 10, 11, 12]
+            [13,14, 15, 16]
 
-        
-        topleft = np.subtract(middle,offset_x_y)
-        topright = np.add(middle, offset_x_ny)
-        topmid = np.subtract(middle, offset_y)
-        bottommid = np.add(middle, offset_y)
-        bottomright = np.add(middle,offset_x_y)
-        bottomleft = np.subtract(middle, offset_x_ny)
-        leftmost = np.subtract(middle, offset_x)
-        rightmost = np.add(middle, offset_x)
+
+             ------>x
+            |
+            |
+            |
+            |
+            ↓
+            y
+        """
+        offset_x = np.array([dx,0])
+        offset_y = np.array([0,dy])
+
+        location_1 = np.add(middle, -offset_x - offset_y)
+        location_2 = np.add(middle, -offset_y)
+        location_3 = np.add(middle, offset_x - offset_y)
+        location_4 = np.add(middle, offset_x*2 - offset_y)
+        location_5 = np.add(middle, -offset_x)
+        location_6 = np.add(middle, np.array([0,0]))
+        location_7 = np.add(middle, offset_x)
+        location_8 = np.add(middle, offset_x*2)
+        location_9 = np.add(middle, -offset_x + offset_y)
+        location_10 = np.add(middle,offset_y)
+        location_11 = np.add(middle,offset_x + offset_y)
+        location_12 = np.add(middle,offset_x*2 + offset_y)
+        location_13 = np.add(middle, -offset_x + offset_y*2)
+        location_14 = np.add(middle,offset_y*2)
+        location_15 = np.add(middle, offset_x + offset_y*2)
+        location_16 = np.add(middle, offset_x*2 + offset_y*2)
+
+        """ # shows each location
+        source = cv2.imread("games/field.jpg")
+
+        i = 0
+        for aaa in middle:
+            print(aaa[0],aaa[1])
+            cv2.rectangle(source, (aaa[0],aaa[1]), (aaa[0],aaa[1]), (255,0,0), 15)
+            cv2.imwrite("images/aaa"+str(i)+".jpg",source)
+            i+=1
+        """
 
         self.positions = [
-                    Gameposition(self.source, self.binary, "tl", topleft, self.debug),
-                    Gameposition(self.source, self.binary, "tm", topmid, self.debug),
-                    Gameposition(self.source, self.binary, "tr", topright, self.debug),
-                    Gameposition(self.source, self.binary, "ll", leftmost, self.debug),
-                    Gameposition(self.source, self.binary, "mm", middle, self.debug),
-                    Gameposition(self.source, self.binary, "rr", rightmost, self.debug),
-                    Gameposition(self.source, self.binary, "bl", bottomleft, self.debug),
-                    Gameposition(self.source, self.binary, "bm", bottommid, self.debug),
-                    Gameposition(self.source, self.binary, "br", bottomright, self.debug),
+                    Gameposition(self.source, self.binary, "rc11",location_1 , self.debug),
+                    Gameposition(self.source, self.binary, "rc12",location_2 , self.debug),
+                    Gameposition(self.source, self.binary, "rc13",location_3 , self.debug),
+                    Gameposition(self.source, self.binary, "rc14",location_4 , self.debug),
+                    Gameposition(self.source, self.binary, "rc21",location_5 , self.debug),
+                    Gameposition(self.source, self.binary, "rc22",location_6, self.debug),
+                    Gameposition(self.source, self.binary, "rc23",location_7, self.debug),
+                    Gameposition(self.source, self.binary, "rc24",location_8 , self.debug),
+                    Gameposition(self.source, self.binary, "rc31",location_9 , self.debug),
+                    Gameposition(self.source, self.binary, "rc32",location_10 , self.debug),
+                    Gameposition(self.source, self.binary, "rc33",location_11 , self.debug),
+                    Gameposition(self.source, self.binary, "rc34",location_12 , self.debug),
+                    Gameposition(self.source, self.binary, "rc41",location_13 , self.debug),
+                    Gameposition(self.source, self.binary, "rc42",location_14 , self.debug),
+                    Gameposition(self.source, self.binary, "rc43",location_15 , self.debug),
+                    Gameposition(self.source, self.binary, "rc44",location_16 , self.debug),
         ]
 
     @staticmethod
@@ -727,4 +760,6 @@ class Gameboard(object):
             raise Exception("Unable to detect 4x4 game board")
         #if (len(positions) != 4):
         #    raise Exception("Unable to detect 3x3 game board")
-        return Gameboard(source, image, w, positions, debug=debug)
+        aaa = Gameboard(source, image, w, positions, debug=debug)
+        #print(aaa)
+        #return Gameboard(source, image, w, positions, debug=debug)
