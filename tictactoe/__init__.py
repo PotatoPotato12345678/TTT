@@ -35,6 +35,7 @@ class GameEngine(object):
             self._dm.camera.movej_nooffset(self._dm, wait=1)
     
     def _is_board_empty(self):
+        print(self._gameboard.status())
         unique = list(set(self._gameboard.status()))
         if (len(unique) == 1) and unique[0] == "?":
             return True
@@ -335,14 +336,13 @@ class Gameposition(object):
         self._process_subimage(positions)
 
     def _process_subimage(self, positions):
-        #4-by-4 field
-        #(tl,tc,tr,ml,mc,mr,bl,bc,br) = tuple(positions)
-        (cc11,cc12,cc13,cc14,cc21,cc22,cc23,cc24,cc31,cc32,cc33,cc34,cc41,cc42,cc43,cc44) = tuple(positions)
-        self.startpos = list(cc11)
-        self.endpos = list(cc44)
-        dx = int(round(dist.euclidean(cc11, cc14), 0))
-        dy = int(round(dist.euclidean(cc11, cc41), 0))
-
+        #3-by-3 field
+        (tl, tr, bl, br) = tuple(positions)
+        self.startpos = list(tl)
+        self.endpos = list(br)
+        dx = int(round(dist.euclidean(tl, tr),0))
+        dy = int(round(dist.euclidean(tl, bl),0))
+        
         # NOTE: self.image.shape returns [y,x] and not [x,y]
         if (self.endpos[0] > self.image.shape[1]):
             self.endpos[0] = list(self.image.shape)[1]
@@ -351,30 +351,15 @@ class Gameposition(object):
         self.startpos = tuple(self.startpos)
         self.endpos = tuple(self.endpos)
         self.roi = self.image[self.startpos[1]:self.endpos[1], self.startpos[0]:self.endpos[0]]
-
+        
         self.roi_in_source = self.source[self.startpos[1]:self.endpos[1], self.startpos[0]:self.endpos[0]]
-        self.area = dx * dy
+        self.area = dx*dy
+        print("{0}, Total area: {1} - TL(x,y) = {2},{3}, BR(x,y) = {4},{5}".format(self.title, self.area, self.startpos[0],self.startpos[1],self.endpos[0],self.endpos[1]))
 
-    #def _process_subimage(self, positions):
-        # #3-by-3 field
-        # (tl, tr, bl, br) = tuple(positions)
-        # self.startpos = list(tl)
-        # self.endpos = list(br)
-        # dx = int(round(dist.euclidean(tl, tr),0))
-        # dy = int(round(dist.euclidean(tl, bl),0))
-        #
-        # # NOTE: self.image.shape returns [y,x] and not [x,y]
-        # if (self.endpos[0] > self.image.shape[1]):
-        #     self.endpos[0] = list(self.image.shape)[1]
-        # if (self.endpos[1] > self.image.shape[0]):
-        #     self.endpos[1] = list(self.image.shape)[0]
-        # self.startpos = tuple(self.startpos)
-        # self.endpos = tuple(self.endpos)
-        # self.roi = self.image[self.startpos[1]:self.endpos[1], self.startpos[0]:self.endpos[0]]
-        #
-        # self.roi_in_source = self.source[self.startpos[1]:self.endpos[1], self.startpos[0]:self.endpos[0]]
-        # self.area = dx*dy
-        #print("{0}, Total area: {1} - TL(x,y) = {2},{3}, BR(x,y) = {4},{5}".format(self.title, self.area, self.startpos[0],self.startpos[1],self.endpos[0],self.endpos[1]))
+        source = cv2.imread("games/field.jpg")
+        cv2.rectangle(source, (self.startpos[0],self.startpos[1]), (self.endpos[0],self.endpos[1]), (255,0,0), 2)
+        position_title = self.title
+        cv2.imwrite(position_title+".jpg",source)
 
     def draw_rectangle_on_image(self, image=None):
         if (type(image) != np.ndarray):
@@ -502,27 +487,6 @@ class Gameboard(object):
         if self.debug>1:
             cv2.waitKey(0)
 
-    #def _order_points(self, unordered_points):
-        # # for 3-by-3 field
-        # """ Orders given points from top left, top right, bottom left, bottom right """
-        # pts = np.array(unordered_points,dtype=int)
-        # # Sort by X coordinates
-        # xSorted = pts[np.argsort(pts[:,0]),:]
-        # # Grab left-most and right-most points from the sorted x-coordinates
-        # leftMost = xSorted[:2, :]
-        # rightMost = xSorted[2:,:]
-        #
-        # # Sort left-most according to Y-coordinates to find top left and bottom left
-        # leftMost = leftMost[np.argsort(leftMost[:, 1]), :]
-        # (tl,bl) = leftMost
-        #
-        # # Calculate Euclidian distance from top left anchor to bottom right anchor
-        # # using the Pythagorean theorem. The point with the largest distance
-        # # is the bottom right
-        # D = dist.cdist(tl[np.newaxis], rightMost, "euclidean")[0]
-        # (br, tr) = rightMost[np.argsort(D)[::-1], :]
-        # return np.array([tl,tr,bl,br], dtype=int)
-
     def _order_points(self, unordered_points):
         # for 4-by-4 field
         pts = np.array(unordered_points,dtype=int)
@@ -637,14 +601,13 @@ class Gameboard(object):
         location_15 = np.add(middle, offset_x + offset_y*2)
         location_16 = np.add(middle, offset_x*2 + offset_y*2)
 
+
         """ # shows each location
         source = cv2.imread("games/field.jpg")
-
-        i = 0
-        for aaa in middle:
-            print(aaa[0],aaa[1])
-            cv2.rectangle(source, (aaa[0],aaa[1]), (aaa[0],aaa[1]), (255,0,0), 15)
-            cv2.imwrite("images/aaa"+str(i)+".jpg",source)
+        for p in middle:
+            print(p[0],p[1])
+            cv2.rectangle(source, (p[0],p[1]), (p[0],p[1]), (255,0,0), 15)
+            cv2.imwrite(")+".jpg",source)
             i+=1
         """
 
@@ -760,6 +723,4 @@ class Gameboard(object):
             raise Exception("Unable to detect 4x4 game board")
         #if (len(positions) != 4):
         #    raise Exception("Unable to detect 3x3 game board")
-        aaa = Gameboard(source, image, w, positions, debug=debug)
-        #print(aaa)
-        #return Gameboard(source, image, w, positions, debug=debug)
+        return Gameboard(source, image, w, positions, debug=debug)
