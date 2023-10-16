@@ -356,10 +356,12 @@ class Gameposition(object):
         self.area = dx*dy
         print("{0}, Total area: {1} - TL(x,y) = {2},{3}, BR(x,y) = {4},{5}".format(self.title, self.area, self.startpos[0],self.startpos[1],self.endpos[0],self.endpos[1]))
 
+        """
         source = cv2.imread("games/field.jpg")
         cv2.rectangle(source, (self.startpos[0],self.startpos[1]), (self.endpos[0],self.endpos[1]), (255,0,0), 2)
         position_title = self.title
-        cv2.imwrite(position_title+".jpg",source)
+        cv2.imwrite("images/area/" +  position_title+".jpg",source)
+        """
 
     def draw_rectangle_on_image(self, image=None):
         if (type(image) != np.ndarray):
@@ -563,7 +565,8 @@ class Gameboard(object):
 
     def _calculate_positions(self):
         intersections = self._order_points(self.intersection_points)# all intersections contain
-        middle = [intersections[0],intersections[1],intersections[4],intersections[5]]
+        middle = [intersections[0],intersections[1],intersections[3],intersections[4]]
+
         dx = abs(int(round(dist.euclidean(middle[0], middle[1]),0)))
         dy = abs(int(round(dist.euclidean(middle[0], middle[2]),0)))
         """
@@ -571,7 +574,6 @@ class Gameboard(object):
             [5,  6,  7,  8]
             [9, 10, 11, 12]
             [13,14, 15, 16]
-
 
              ------>x
             |
@@ -601,13 +603,17 @@ class Gameboard(object):
         location_15 = np.add(middle, offset_x + offset_y*2)
         location_16 = np.add(middle, offset_x*2 + offset_y*2)
 
-
-        """ # shows each location
+        locations = [
+            location_1,location_2,location_3,location_4,location_5,location_6,location_7,location_8,location_9,location_10,
+            location_11,location_12,location_13,location_14,location_15,location_16
+            ]
+        
+        """
         source = cv2.imread("games/field.jpg")
-        for p in middle:
-            print(p[0],p[1])
-            cv2.rectangle(source, (p[0],p[1]), (p[0],p[1]), (255,0,0), 15)
-            cv2.imwrite(")+".jpg",source)
+        i = 0
+        for p in locations:
+            cv2.rectangle(source, (p[0][0],p[0][1]), (p[3][0],p[3][1]), (255,0,0), 15)
+            cv2.imwrite("images/scale_of_area/position" + str(i)+".jpg",source)
             i+=1
         """
 
@@ -627,7 +633,7 @@ class Gameboard(object):
                     Gameposition(self.source, self.binary, "rc41",location_13 , self.debug),
                     Gameposition(self.source, self.binary, "rc42",location_14 , self.debug),
                     Gameposition(self.source, self.binary, "rc43",location_15 , self.debug),
-                    Gameposition(self.source, self.binary, "rc44",location_16 , self.debug),
+                    Gameposition(self.source, self.binary, "rc44",location_16 , self.debug)
         ]
 
     @staticmethod
