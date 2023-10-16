@@ -303,15 +303,15 @@ class GameEngine(object):
             self.show_gameboard()
         winner = self._is_game_won()
         if (winner == "tie"):
-            print("GAME OVER! IT WAS A TIE!")
+            print("GAME OVER! IT WAS A TIE! YOU HAVE SAME LEVEL WITH A ROBOT!")
         elif (winner == self.player):
-            print("YOU WON!")
+            print("YOU WON! YOU KNOW OFF A ROBOT!")
             if self._dm != None:
                 self._dm.set_speed(velocity=20)
                 self._dm.pose.move_nooffset(self._dm, wait=0.5)
                 self._dm.set_speed()
         else:
-            print("GAME OVER! YOU LOST!")
+            print("GAME OVER! A ROBOT KNOCK YOU OFF!")
             if self._dm != None:
                 self._dm.set_speed(velocity=50)
                 for i in range(3):
