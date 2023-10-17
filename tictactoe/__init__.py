@@ -133,6 +133,7 @@ class GameEngine(object):
                     self.currentplayer = self.enemy
 
     def _make_move(self):
+        print(self.currentplayer)
         if self.currentplayer == self.player:
             self._ask_player_move()
         else:
@@ -240,6 +241,7 @@ class GameEngine(object):
 
     def _ai_make_move(self):
         origBoard = self.gameboard
+        print(origBoard)
         pos = self.make_best_move(origBoard,self.enemy,self.diff) # Denne er viktig for minimax. Vi må sende inn origBoard (som er brettet før AI sitt trekk, self.enemy og diff=difficulty 
         #pos = self._get_free_position()
         if self._dm != None:
@@ -336,7 +338,7 @@ class Gameposition(object):
         self._process_subimage(positions)
 
     def _process_subimage(self, positions):
-        #3-by-3 field
+        #4-by-4 field
         (tl, tr, bl, br) = tuple(positions)
         self.startpos = list(tl)
         self.endpos = list(br)
@@ -354,7 +356,7 @@ class Gameposition(object):
         
         self.roi_in_source = self.source[self.startpos[1]:self.endpos[1], self.startpos[0]:self.endpos[0]]
         self.area = dx*dy
-        print("{0}, Total area: {1} - TL(x,y) = {2},{3}, BR(x,y) = {4},{5}".format(self.title, self.area, self.startpos[0],self.startpos[1],self.endpos[0],self.endpos[1]))
+        #print("{0}, Total area: {1} - TL(x,y) = {2},{3}, BR(x,y) = {4},{5}".format(self.title, self.area, self.startpos[0],self.startpos[1],self.endpos[0],self.endpos[1]))
 
         """
         source = cv2.imread("games/field.jpg")
@@ -568,7 +570,17 @@ class Gameboard(object):
         middle = [intersections[0],intersections[1],intersections[3],intersections[4]]
 
         dx = abs(int(round(dist.euclidean(middle[0], middle[1]),0)))
+
         dy = abs(int(round(dist.euclidean(middle[0], middle[2]),0)))
+
+        dydx = dy/dx
+
+        x_of_dx = float(intersections[2][0]-intersections[0][0])/2
+        y_of_dx = float(intersections[2][1]-intersections[0][1])/2
+
+        x_of_dy = float(intersections[6][0]-intersections[0][0])/2
+        y_of_dy = float(intersections[6][1]-intersections[0][1])/2
+
         """
             [1,  2,  3,  4]
             [5,  6,  7,  8]
@@ -583,8 +595,8 @@ class Gameboard(object):
             ↓
             y
         """
-        offset_x = np.array([dx,0])
-        offset_y = np.array([0,dy])
+        offset_x = np.array([x_of_dx, y_of_dx])
+        offset_y = np.array([x_of_dy, y_of_dy])
 
         location_1 = np.add(middle, -offset_x - offset_y)
         location_2 = np.add(middle, -offset_y)
@@ -607,15 +619,15 @@ class Gameboard(object):
             location_1,location_2,location_3,location_4,location_5,location_6,location_7,location_8,location_9,location_10,
             location_11,location_12,location_13,location_14,location_15,location_16
             ]
-        
-        """
-        source = cv2.imread("games/field.jpg")
-        i = 0
+
+        i = 1
+        source =self.source
+
         for p in locations:
-            cv2.rectangle(source, (p[0][0],p[0][1]), (p[3][0],p[3][1]), (255,0,0), 15)
+            cv2.rectangle(source, (int(p[0][0]),int(p[0][1])), (int(p[3][0]),int(p[3][1])), (255,0,0), 1)
             cv2.imwrite("images/scale_of_area/position" + str(i)+".jpg",source)
             i+=1
-        """
+
 
         self.positions = [
                     Gameposition(self.source, self.binary, "rc11",location_1 , self.debug),
