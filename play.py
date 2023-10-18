@@ -31,7 +31,7 @@ def main():
         if options.dobot == True:
             ge.start(use_camera=True, gameboard_file=None)
         else:
-            ge.start(use_camera=False, gameboard_file="games/field.jpg")
+            ge.start(use_camera=False, gameboard_file="images/toma.jpg")
     except KeyboardInterrupt as e:
         print("\nBye! Thanks for playing!")
     #except Exception as e:

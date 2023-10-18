@@ -242,7 +242,7 @@ class GameEngine(object):
     def _ai_make_move(self):
         origBoard = self.gameboard
         print(origBoard)
-        pos = self.make_best_move(origBoard,self.enemy,self.diff) # Denne er viktig for minimax. Vi må sende inn origBoard (som er brettet før AI sitt trekk, self.enemy og diff=difficulty 
+        pos = self.make_best_move(origBoard,self.enemy,self.diff) 
         #pos = self._get_free_position()
         if self._dm != None:
             self._dm.buffer[self.currentbuffer].pick(self._dm)
@@ -498,23 +498,29 @@ class Gameboard(object):
         # Sort by X coordinates
         xSorted = pts[np.argsort(pts[:,0]),:]
         # Grab left-most and right-most points from the sorted x-coordinates
-        leftMost = xSorted[:3, :]
-        centerMost = xSorted[3:6,:]
-        rightMost = xSorted[6:,:]
+        leftMost = xSorted[:5, :]
+        centerLeft = xSorted[5:10, :]
+        centerMost = xSorted[10:15, :]
+        centerRight = xSorted[15:20, :]
+        rightMost = xSorted[20:25, :]
 
         # Sort left-most according to Y-coordinates to find top left and bottom left
         leftMost = leftMost[np.argsort(leftMost[:, 1]), :]
-        (tl, ml, bl) = leftMost
+        (p11,p21,p31,p41,p51) = leftMost
+
+        centerLeft = centerLeft[np.argsort(centerLeft[:, 1]), :]
+        (p12,p22,p32,p42,p52) = centerLeft
 
         centerMost = centerMost[np.argsort(centerMost[:, 1]), :]
-        (tc, mc, bc) = centerMost
+        (p13,p23,p33,p43,p53) = centerMost
 
-        # Calculate Euclidian distance from top left anchor to bottom right anchor
-        # using the Pythagorean theorem. The point with the largest distance
-        # is the bottom right
-        D = dist.cdist(tl[np.newaxis], rightMost, "euclidean")[0]
-        (br, mr, tr) = rightMost[np.argsort(D)[::-1], :]
-        return np.array([tl,tc,tr,ml,mc,mr,bl,bc,br], dtype=int)
+        centerRight = centerRight[np.argsort(centerRight[:, 1]), :]
+        (p14,p24,p34,p44,p54) = centerRight
+
+        (p15,p25,p35,p45,p55) = rightMost[np.argsort(rightMost[:, 1]), :]
+
+        sorted_positions = np.array([p11,p12,p13,p14,p15,p21,p22,p23,p24,p25,p31,p32,p33,p34,p35,p41,p42,p43,p44,p45,p51,p52,p53,p54,p55],dtype=int)
+        return sorted_positions
 
     def _slope(self, a, b):
         return float((b[1]-a[1])/(b[0]-a[0]))
@@ -566,21 +572,7 @@ class Gameboard(object):
         self.binary = cv2.bitwise_and(self.binary, mask)
 
     def _calculate_positions(self):
-        intersections = self._order_points(self.intersection_points)# all intersections contain
-        middle = [intersections[0],intersections[1],intersections[3],intersections[4]]
-
-        dx = abs(int(round(dist.euclidean(middle[0], middle[1]),0)))
-
-        dy = abs(int(round(dist.euclidean(middle[0], middle[2]),0)))
-
-        dydx = dy/dx
-
-        x_of_dx = float(intersections[2][0]-intersections[0][0])/2
-        y_of_dx = float(intersections[2][1]-intersections[0][1])/2
-
-        x_of_dy = float(intersections[6][0]-intersections[0][0])/2
-        y_of_dy = float(intersections[6][1]-intersections[0][1])/2
-
+        intersections = self._order_points(self.intersection_points)# all intersections contai
         """
             [1,  2,  3,  4]
             [5,  6,  7,  8]
@@ -595,58 +587,42 @@ class Gameboard(object):
             ↓
             y
         """
-        offset_x = np.array([x_of_dx, y_of_dx])
-        offset_y = np.array([x_of_dy, y_of_dy])
 
-        location_1 = np.add(middle, -offset_x - offset_y)
-        location_2 = np.add(middle, -offset_y)
-        location_3 = np.add(middle, offset_x - offset_y)
-        location_4 = np.add(middle, offset_x*2 - offset_y)
-        location_5 = np.add(middle, -offset_x)
-        location_6 = np.add(middle, np.array([0,0]))
-        location_7 = np.add(middle, offset_x)
-        location_8 = np.add(middle, offset_x*2)
-        location_9 = np.add(middle, -offset_x + offset_y)
-        location_10 = np.add(middle,offset_y)
-        location_11 = np.add(middle,offset_x + offset_y)
-        location_12 = np.add(middle,offset_x*2 + offset_y)
-        location_13 = np.add(middle, -offset_x + offset_y*2)
-        location_14 = np.add(middle,offset_y*2)
-        location_15 = np.add(middle, offset_x + offset_y*2)
-        location_16 = np.add(middle, offset_x*2 + offset_y*2)
+        locations =[]
+        w = 3
+        for i in range(20):
+            if (i+1)%5 == 0:
+                continue;
+            
+            intersections[i][0]+=w
+            intersections[i][1]+=w
+            intersections[i+1][0]-=w
+            intersections[i+1][1]+=w
+            intersections[i+5][0]+=w
+            intersections[i+5][1]-=w
+            intersections[i+6][0]-=w
+            intersections[i+6][1]-=w
 
-        locations = [
-            location_1,location_2,location_3,location_4,location_5,location_6,location_7,location_8,location_9,location_10,
-            location_11,location_12,location_13,location_14,location_15,location_16
-            ]
+            locations.append(
+                [
+                [intersections[i][0],intersections[i][1]],
+                [intersections[i+1][0],intersections[i][1]],
+                [intersections[i+5][0],intersections[i+5][1]],
+                [intersections[i+6][0],intersections[i+6][1]]
+                ]
+            )
 
-        i = 1
-        source =self.source
+        
+        source = cv2.imread("images/toma.jpg")
+        for l in locations:
+            cv2.rectangle(source,l[0],l[3],(255,0,0),2)
+        cv2.imwrite("images/intersections/ikuta.jpg",source)
+        
 
-        for p in locations:
-            cv2.rectangle(source, (int(p[0][0]),int(p[0][1])), (int(p[3][0]),int(p[3][1])), (255,0,0), 1)
-            cv2.imwrite("images/scale_of_area/position" + str(i)+".jpg",source)
-            i+=1
-
-
-        self.positions = [
-                    Gameposition(self.source, self.binary, "rc11",location_1 , self.debug),
-                    Gameposition(self.source, self.binary, "rc12",location_2 , self.debug),
-                    Gameposition(self.source, self.binary, "rc13",location_3 , self.debug),
-                    Gameposition(self.source, self.binary, "rc14",location_4 , self.debug),
-                    Gameposition(self.source, self.binary, "rc21",location_5 , self.debug),
-                    Gameposition(self.source, self.binary, "rc22",location_6, self.debug),
-                    Gameposition(self.source, self.binary, "rc23",location_7, self.debug),
-                    Gameposition(self.source, self.binary, "rc24",location_8 , self.debug),
-                    Gameposition(self.source, self.binary, "rc31",location_9 , self.debug),
-                    Gameposition(self.source, self.binary, "rc32",location_10 , self.debug),
-                    Gameposition(self.source, self.binary, "rc33",location_11 , self.debug),
-                    Gameposition(self.source, self.binary, "rc34",location_12 , self.debug),
-                    Gameposition(self.source, self.binary, "rc41",location_13 , self.debug),
-                    Gameposition(self.source, self.binary, "rc42",location_14 , self.debug),
-                    Gameposition(self.source, self.binary, "rc43",location_15 , self.debug),
-                    Gameposition(self.source, self.binary, "rc44",location_16 , self.debug)
-        ]
+        for i in range(16):
+            self.positions.append(
+                    Gameposition(self.source, self.binary, "rc" + str(i),locations[i] , self.debug))
+            
 
     @staticmethod
     def _get_center_position_of_rectangle(x1,x2,y1,y2):
@@ -687,7 +663,7 @@ class Gameboard(object):
         verticle_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, kernel_length))
         # A horizontal kernel of (kernel_length X 1), which will help to detect all the horizontal line from the image.
         hori_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_length, 1))
-        # A kernel of (3 X 3) ones
+        # A kernel of (4 X 4) ones
         kernel = np.array((
             [1, 1, 1, 1],
             [1, 1, 1, 1],
@@ -717,7 +693,6 @@ class Gameboard(object):
         positions = []
         red = (0,0,255)
         blue = (255,0,0)
-
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection
             approx = cv2.approxPolyDP(cnt, boardweight*cv2.arcLength(cnt, True), True)
@@ -737,7 +712,7 @@ class Gameboard(object):
                 positions.append(center)
             else:
                 raise Exception("Unable to detect game board intersections. Try to adjust the weight.")
-        if (len(positions) != 9):
+        if (len(positions) != 25):
             raise Exception("Unable to detect 4x4 game board")
         #if (len(positions) != 4):
         #    raise Exception("Unable to detect 3x3 game board")
