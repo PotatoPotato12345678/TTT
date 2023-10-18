@@ -24,9 +24,9 @@ class GameEngine(object):
         self.diff = None
         self.debug = debug
         self._winning_combinations = (
-        [1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16],
-        [1,5,9,13],[2,6,10,14],[3,7,11,15],[4,8,12,16],
-        [1,6,11,16],[4,7,10,13]
+        [0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],
+        [0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],
+        [0,5,10,15],[3,6,9,12]
         )
         self.player, self.enemy = self._ask_player_letter()
         self.currentplayer = self._decide_initial_player()
@@ -44,15 +44,16 @@ class GameEngine(object):
     def _is_game_won(self):
         for player in PLAYERS:
             for combos in self._winning_combinations:
-                if (self.gameboard[combos[0]] == player and self.gameboard[combos[1]] == player and self.gameboard[combos[2]] == player):
+                if (self.gameboard[combos[0]] == player and self.gameboard[combos[1]] == player and self.gameboard[combos[2]] == player and self.gameboard[combos[3]] == player):
                     return player
         if "?" not in self.gameboard:
             return "tie"
         return None
 
     def _is_game_won_player(self, player, board):
+
         for combos in self._winning_combinations:
-            if (board[combos[0]] == player and board[combos[1]] == player and board[combos[2]] == player):
+            if (board[combos[0]] == player and board[combos[1]] == player and board[combos[2]] == player and board[combos[3]]):
                 return True
 
         return False
@@ -70,16 +71,13 @@ class GameEngine(object):
         return random.choice(PLAYERS)
 
     def _ask_player_letter(self):
-        player = input("Do you want to play as [O] or X? ")
-        if (player.lower() == "x"):
-            player="X"
-            enemy="O"
-        else:
-            player="O"
-            enemy="X"
+        player="X"
+        enemy="O"
+        print("--------You play 'X'--------- ")
         return (player, enemy)
 
     def _is_move_valid(self, move):
+        print(self.gameboard)
         pos = -1
         try:
             pos = int(move)
@@ -124,8 +122,9 @@ class GameEngine(object):
                     valid = True
                     self._update_board(valid_pos, self.player)
                     self.currentplayer = self.enemy
+                    print(self.currentplayer)
             else:
-                pos = input("Enter position [0-8]: ")
+                pos = input("Enter position [1-24]: ")
                 valid_pos = self._is_move_valid(pos)
                 if (valid_pos != None):
                     valid=True
@@ -133,7 +132,6 @@ class GameEngine(object):
                     self.currentplayer = self.enemy
 
     def _make_move(self):
-        print(self.currentplayer)
         if self.currentplayer == self.player:
             self._ask_player_move()
         else:
@@ -282,10 +280,6 @@ class GameEngine(object):
         if not self._is_board_empty():
             raise Exception("Board is not empty. Please clear board.")
 
-        # Print board status
-        ai_player = self.enemy
-        hu_player = self.player
-
         difficulty = int(input(" 1: Easy \n 2: Medium \n 3: Hard \n 4: Expert \n Choose a difficulty: "))
         if difficulty == 1:
             self.diff = "Easy"
@@ -295,6 +289,7 @@ class GameEngine(object):
             self.diff = "Hard"
         else:
             self.diff = "Expert"
+
         while (not self._is_game_won()):
             try:
                 self._parse_gameboard(use_camera, gameboard_file)
