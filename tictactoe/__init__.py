@@ -612,12 +612,11 @@ class Gameboard(object):
                 ]
             )
 
-        
         source = cv2.imread("images/toma.jpg")
         for l in locations:
-            cv2.rectangle(source,l[0],l[3],(255,0,0),2)
-        cv2.imwrite("images/intersections/ikuta.jpg",source)
-        
+            cv2.rectangle(source, l[0], l[3], (255,0,0), 2)
+        cv2.imwrite("images/intersections/ikuta.jpg", source)
+
 
         for i in range(16):
             self.positions.append(
