@@ -77,7 +77,6 @@ class GameEngine(object):
         return (player, enemy)
 
     def _is_move_valid(self, move):
-        print(self.gameboard)
         pos = -1
         try:
             pos = int(move)
@@ -122,9 +121,8 @@ class GameEngine(object):
                     valid = True
                     self._update_board(valid_pos, self.player)
                     self.currentplayer = self.enemy
-                    print(self.currentplayer)
             else:
-                pos = input("Enter position [1-24]: ")
+                pos = input("Enter position [0-24]: ")
                 valid_pos = self._is_move_valid(pos)
                 if (valid_pos != None):
                     valid=True
@@ -183,7 +181,7 @@ class GameEngine(object):
             return bestVal
 
 
-
+    """
     def make_best_move(self, board, player,difficulty):
         if difficulty == "Easy":
             diff_random = 25
@@ -198,48 +196,35 @@ class GameEngine(object):
         # Find available moves
         initValue = 50
         best_choices = []
-
         available_pos = self._get_all_free_pos(board)
-        if len(available_pos)==9 and diff_random == 100:
-            return 4
-        if rnum > diff_random:
-            move = random.choice(available_pos)
-            return move
-
+       # if rnum > diff_random:
+        move = random.choice(available_pos)
+        return move
+        #else:
+        for move in available_pos:
+            board = self.update_ai_board(move, player, board)
+            moveVal = self.minimax(board, self._change_player(player))
+            board = self.update_ai_board(move, "?", board)
+            if moveVal > initValue:
+                best_choices = [move]
+                return move
+            elif moveVal == initValue:
+                best_choices.append(move)
+        if len(best_choices)>0:
+            return random.choice(best_choices)
         else:
-            if player == "O":
-                for move in available_pos:
-                    board = self.update_ai_board(move, player, board)
-                    moveVal = self.minimax(board, self._change_player(player))
-                    board = self.update_ai_board(move, "?", board)
-
-                    if moveVal > initValue:
-                        best_choices = [move]
-                        return move
-                    elif moveVal == initValue:
-                        best_choices.append(move)
-            else:
-                for move in available_pos:
-                    board = self.update_ai_board(move, player, board)
-                    moveVal = self.minimax(board, self._change_player(player))
-                    board = self.update_ai_board(move, "?", board)
-
-                    if moveVal < initValue:
-                        best_choices = [move]
-                        return move
-                    elif moveVal == initValue:
-                        best_choices.append(move)
-
-            if len(best_choices)>0:
-                return random.choice(best_choices)
-            else:
-                return random.choice(available_pos)
-
+            return random.choice(available_pos)
+    """  
+ 
+    def make_best_move(self, board, player,difficulty):
+        #All random choice
+        available_pos = self._get_all_free_pos(board)
+        move = random.choice(available_pos)
+        return move
 
 
     def _ai_make_move(self):
         origBoard = self.gameboard
-        print(origBoard)
         pos = self.make_best_move(origBoard,self.enemy,self.diff) 
         #pos = self._get_free_position()
         if self._dm != None:
