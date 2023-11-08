@@ -15,7 +15,7 @@ def show_position():
     while not done:
         cont = input("Move arm. Press [enter] to show position. Press [x] to quit")
         if cont.lower() == "x":
-            break
+            break;
         p = dType.GetPose(api)
         pos = DobotPosition(p[0], p[1], p[2], p[3])
         print("Current position: {0}\n".format(pos))
@@ -146,7 +146,6 @@ def main():
     except Exception:
         pass
     camera,buffer,slot,pose = DobotPosition.deserialize(jsondata)
-
     print("\n---------------------------------------------")
     print("OpenCV Tic Tac Toe Engine - Dobot Calibration")
     print("---------------------------------------------\n")
