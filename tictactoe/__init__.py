@@ -252,6 +252,7 @@ class GameEngine(object):
         else:
             cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
             ret_val, image = cam.read()
+
             #cv2.imwrite(datetime.now().strftime("%H%M%S.jpg"), image)
             cam.release()
             cv2.destroyAllWindows()
@@ -591,12 +592,6 @@ class Gameboard(object):
                 [intersections[i+6][0],intersections[i+6][1]]
                 ]
             )
-
-        
-        source = cv2.imread("images/toma.jpg")
-        for l in locations:
-            cv2.rectangle(source,l[0],l[3],(255,0,0),2)
-        cv2.imwrite("images/intersections/ikuta.jpg",source)
         
 
         for i in range(16):
@@ -673,6 +668,9 @@ class Gameboard(object):
         positions = []
         red = (0,0,255)
         blue = (255,0,0)
+
+        print(len(contours))
+
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection
             approx = cv2.approxPolyDP(cnt, boardweight*cv2.arcLength(cnt, True), True)
@@ -686,11 +684,14 @@ class Gameboard(object):
                 x, y, w, h = cv2.boundingRect(cnt)
                 cv2.rectangle(source, (x,y), (x+w,y+h), (255,0,0), 1)
                 if debug>1:
+                    cv2.imwrite("images/intersection.jpg",source)
                     cv2.imshow("rectangle", source)
                     cv2.waitKey(0)
                 center = Gameboard._get_center_position_of_rectangle(x, x+w, y, y+h)
                 positions.append(center)
             else:
+                print(len(approx))
+                continue;
                 raise Exception("Unable to detect game board intersections. Try to adjust the weight.")
         if (len(positions) != 25):
             raise Exception("Unable to detect 4x4 game board")

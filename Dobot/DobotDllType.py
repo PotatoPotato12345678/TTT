@@ -334,7 +334,7 @@ class TRIGCmd(Structure):
     _fields_ = [
         ("address", c_byte), 
         ("mode", c_byte), 
-        ("condition",  c_byte), 
+        ("condition",  c_byte),
         ("threshold", c_uint16)
         ]
 
@@ -1739,7 +1739,6 @@ def SetPTPLParamsEx(api, lVelocity, lAcceleration, isQueued=0):
     if not ret:
         print("Dobot is not in L model")
         return
-    
     ret = SetPTPLParams(api, lVelocity, lAcceleration, isQueued)
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
