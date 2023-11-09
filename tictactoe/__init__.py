@@ -260,7 +260,7 @@ class GameEngine(object):
         self._gameboard = Gameboard.detect_game_board(image, debug=self.debug)
 
 
-    def start(self, use_camera=False, gameboard_file="games/default.jpg"):
+    def start(self, use_camera=False, gameboard_file="images/toma.jpg"):
         self._parse_gameboard(use_camera, gameboard_file)
         if not self._is_board_empty():
             raise Exception("Board is not empty. Please clear board.")
