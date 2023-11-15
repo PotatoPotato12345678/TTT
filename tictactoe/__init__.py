@@ -277,12 +277,12 @@ class GameEngine(object):
             self.diff = "Expert"
 
         while (not self._is_game_won()):
-            try:
+            """try:
                 self._parse_gameboard(use_camera, gameboard_file)
             except Exception as e:
                 print("Unable to detect game board.")
                 sleep(1)
-                continue
+                continue"""
             print("Your move player {0}".format(self.currentplayer))
             #pdb.set_trace()
             self._make_move()
@@ -303,7 +303,6 @@ class GameEngine(object):
                 for i in range(3):
                     self._dm.pose.movej_nooffset(self._dm, wait=0)
                     self._dm.camera.movej_nooffset(self._dm, wait=0)
-
 
 class Gameposition(object):
     def __init__(self, src_image, bin_image, title, positions, debug=False):
@@ -669,8 +668,9 @@ class Gameboard(object):
         red = (0,0,255)
         blue = (255,0,0)
 
-        print(len(contours))
-
+        if len(contours) != 25:
+            raise Exception("Unable to detect 4x4 game board");
+    
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection
             approx = cv2.approxPolyDP(cnt, boardweight*cv2.arcLength(cnt, True), True)
@@ -679,22 +679,19 @@ class Gameboard(object):
             if debug>3:
                 cv2.imshow("Showing game board intersection {0}".format(i+1),source)
                 cv2.waitKey(0)
-            if len(approx) == 4:
-                # get the bounding rect
-                x, y, w, h = cv2.boundingRect(cnt)
-                cv2.rectangle(source, (x,y), (x+w,y+h), (255,0,0), 1)
-                if debug>1:
-                    cv2.imwrite("images/intersection.jpg",source)
-                    cv2.imshow("rectangle", source)
-                    cv2.waitKey(0)
-                center = Gameboard._get_center_position_of_rectangle(x, x+w, y, y+h)
+
+            if len(approx) >0:
+                sum = 0
+                sumx = 0
+                sumy = 0
+                for elm in approx:
+                    sum += elm[0]
+                center = sum
+                print(tuple(center))
                 positions.append(center)
             else:
-                print(len(approx))
-                continue;
                 raise Exception("Unable to detect game board intersections. Try to adjust the weight.")
-        if (len(positions) != 25):
-            raise Exception("Unable to detect 4x4 game board")
-        #if (len(positions) != 4):
-        #    raise Exception("Unable to detect 3x3 game board")
+        print(positions[0])
+        w = abs(positions[0][0] - positions[1][0])
+        #tuple, (x,y)
         return Gameboard(source, image, w, positions, debug=debug)
