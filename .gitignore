@@ -1,0 +1,13 @@
+*.pyc
+*.pyd
+*.un~
+Lib/*
+Scripts/*
+pyvenv.cfg
+tcl
+pip*
+Include
+*workspace
+venv
+field.jpg
+images
