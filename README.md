@@ -1,20 +1,34 @@
-# Description here
+# Description about this project.
 
-here is a space for description.
+### Goal
+Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
+
+### Two big parts in implementation
+- play with Dobot
+- reinforcement learning
 
 ### Progress so far
+- play on a 4-by-4 with random choice
 
-4-by-4 with random choice was done
 
 ### Future works
-Reinforcement learning
+- Understanding and implementing  reinforcement learning
+    -- details
+- Fixing the detection system.
+
 
 ---
 
+## important things
+- Release the white button when putting Enter in Calibration
+- API uses 32bits python
 
-## API
+--- 
 
----
+## About API
+
+DobotDll.dll is a API and it is written in C language
+<details><summary>details</summary><div>
 
 ```Python
 #play.py
@@ -52,9 +66,20 @@ extern "C" DOBOTDLLSHARED_EXPORT int GetPTPCommonParams(PTPCommonParams *ptpComm
 .
 ```
 
-## Overflow until getting the error
+</div></details>
 
 ---
+
+
+
+## Overflow of API error
+
+solution: changing to new laptop.
+
+notice: OS update is not the cause.
+
+<details><summary>code details</summary><div>
+
 
 ### play.py : try to create an instance of DobotManger class in Dobot.py
 
@@ -114,3 +139,11 @@ def SetPTPCommonParams(api, velocityRatio, accelerationRatio, isQueued=0):
 extern "C" DOBOTDLLSHARED_EXPORT int SetPTPCommonParams(PTPCommonParams *ptpCommonParams, bool isQueued, uint64_t *queuedCmdIndex);
 ```
 It doesn't return correct value.
+
+
+</div></details>
+
+--- 
+
+
+
