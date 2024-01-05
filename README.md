@@ -12,10 +12,9 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 
 
 ### Future works
-- Understanding and implementing  reinforcement learning
+- Understanding and implementing reinforcement learning
     -- details
 - Fixing the detection system.
-
 
 ---
 
@@ -23,6 +22,13 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 - Release the white button when putting Enter in Calibration
 - API uses 32bits python
 
+## current issue
+- when detecting over 25 intersections, get an error in dicision of each area
+
+## working on
+- system will reuse intersection data from first detection.
+
+- combine AI with this project.
 --- 
 
 ## About API

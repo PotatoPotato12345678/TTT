@@ -10,4 +10,4 @@ Include
 *workspace
 venv
 field.jpg
-images
+images/*.jpg

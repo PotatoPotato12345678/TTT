@@ -325,6 +325,7 @@ class Gameposition(object):
         self.endpos = list(br)
         dx = int(round(dist.euclidean(tl, tr),0))
         dy = int(round(dist.euclidean(tl, bl),0))
+
         
         # NOTE: self.image.shape returns [y,x] and not [x,y]
         if (self.endpos[0] > self.image.shape[1]):
@@ -341,7 +342,7 @@ class Gameposition(object):
 
 
         cv2.rectangle(self.source, (self.startpos[0],self.startpos[1]), (self.endpos[0],self.endpos[1]), (255,0,0), 2)
-        cv2.imwrite("images/area/" +  self.title+".jpg",self.source)
+        cv2.imwrite("images/test/area/" +  self.title+".jpg",self.source)
 
     def draw_rectangle_on_image(self, image=None):
         if (type(image) != np.ndarray):
@@ -560,10 +561,13 @@ class Gameboard(object):
 
         locations =[]
         w = 3
+        aa = 0
+        print(intersections)
         for i in range(20):
             if (i+1)%5 == 0:
                 continue;
             
+            """
             intersections[i][0]+=w
             intersections[i][1]+=w
             intersections[i+1][0]-=w
@@ -572,18 +576,32 @@ class Gameboard(object):
             intersections[i+5][1]-=w
             intersections[i+6][0]-=w
             intersections[i+6][1]-=w
+            """
 
             locations.append(
                 [
-                [intersections[i][0],intersections[i][1]],
-                [intersections[i+1][0],intersections[i][1]],
-                [intersections[i+5][0],intersections[i+5][1]],
-                [intersections[i+6][0],intersections[i+6][1]]
+                [intersections[i][0]+w,intersections[i][1]+w],
+                [intersections[i+1][0]-w,intersections[i][1]+w],
+                [intersections[i+5][0]+w,intersections[i+5][1]-w],
+                [intersections[i+6][0]-w,intersections[i+6][1]-w]
                 ]
             )
+
+
+
+        c = 0;
+        for l in locations:
+            cv2.rectangle(self.source,l[0],l[3],(255,10,0),4);
+            cv2.imwrite("images/test/area/locations/p-"+str(c)+".jpg",self.source);
+            c+=1;
+        d = 0;
+        for l in intersections:
+            print(l)
+            cv2.rectangle(self.source,l,l,(0,255,0),10);
+            cv2.imwrite("images/test/intersections/ordered/p-"+str(d)+".jpg",self.source);
+            d+=1;
+    
         
-            #cv2.rectangle(self.source,locations[0][0],locations[0][3],(0,0,0),4);
-        cv2.imwrite("images/test/default-image.jpg",self.source)
         for i in range(16):
             self.positions.append(
                     Gameposition(self.source, self.binary, "rc" + str(i),locations[i] , self.debug))
@@ -640,7 +658,6 @@ class Gameboard(object):
         # Morphological operation to detect horizontal lines from an image
         img_temp2 = cv2.erode(image, hori_kernel, iterations=1)
         horizontal_lines_img = cv2.dilate(img_temp2, hori_kernel, iterations=1)
-        print(debug)
         if debug > 3:
             cv2.imwrite("images/test/lines/hlines.jpg", horizontal_lines_img)
         intersections = cv2.bitwise_and(verticle_lines_img, horizontal_lines_img)
@@ -661,7 +678,6 @@ class Gameboard(object):
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection
             approx = cv2.approxPolyDP(cnt, boardweight*cv2.arcLength(cnt, True), True)
-
             cv2.drawContours(source,[cnt],0,red,-1)
             if debug>3:
                 cv2.imwrite("images/test/intersections/cnt-"+str(i)+".jpg",source)
@@ -669,15 +685,14 @@ class Gameboard(object):
             if len(approx) >0:
                 sum = 0
                 sumx = 0
-                sumy = 0
+                sumy = 0 
                 for elm in approx:
-                    sum += elm[0]
-                center = sum
-                #print(tuple(center))
-                positions.append(center)
+                    sum += elm
+                center = sum/len(approx)
+                positions.append(center[0])
             else:
                 raise Exception("Unable to detect game board intersections. Try to adjust the weight.")
-        #print(positions[0])
+        
         w = abs(positions[0][0] - positions[1][0])
         #tuple, (x,y)
         return Gameboard(source, image, w, positions, debug=debug)
