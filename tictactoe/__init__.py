@@ -264,6 +264,7 @@ class GameEngine(object):
     def start(self, use_camera=False, gameboard_file="images/toma.jpg"):
         self._parse_gameboard(use_camera, gameboard_file)
         if not self._is_board_empty():
+
             raise Exception("Board is not empty. Please clear board.")
 
         difficulty = int(input(" 1: Easy \n 2: Medium \n 3: Hard \n 4: Expert \n Choose a difficulty: "))
@@ -338,12 +339,9 @@ class Gameposition(object):
         self.area = dx*dy
         #print("{0}, Total area: {1} - TL(x,y) = {2},{3}, BR(x,y) = {4},{5}".format(self.title, self.area, self.startpos[0],self.startpos[1],self.endpos[0],self.endpos[1]))
 
-        """
-        source = cv2.imread("games/field.jpg")
-        cv2.rectangle(source, (self.startpos[0],self.startpos[1]), (self.endpos[0],self.endpos[1]), (255,0,0), 2)
-        position_title = self.title
-        cv2.imwrite("images/area/" +  position_title+".jpg",source)
-        """
+
+        cv2.rectangle(self.source, (self.startpos[0],self.startpos[1]), (self.endpos[0],self.endpos[1]), (255,0,0), 2)
+        cv2.imwrite("images/area/" +  self.title+".jpg",self.source)
 
     def draw_rectangle_on_image(self, image=None):
         if (type(image) != np.ndarray):
@@ -409,9 +407,7 @@ class Gameposition(object):
                     print("{0}: Contours: {1}, Solidity: {2}, Ratio: {3}, Detected: {4}".format(self.title, len(cnts), solidity, ratio, self.symbol))
                     img = self.roi_in_source.copy()
                     cv2.drawContours(img,[c],0,(0,255,0),-1)
-                    cv2.imshow(self.title, img)
-                if self.debug>1:
-                    cv2.waitKey(0)
+                    cv2.imwrite("images/test/symbol/"+self.title+".jpg", img)
                 break
         if (self.symbol in ("O","X")):
             cv2.putText(self.roi_in_source, self.symbol, (int(x+(w/2)), int(y+(h/2))), cv2.FONT_HERSHEY_SIMPLEX, 1.25, (0, 0, 255), 4)
@@ -446,8 +442,6 @@ class Gameboard(object):
         
         self._draw_positions()
         self._detect_symbols()
-        if debug > 0:
-            cv2.waitKey(0)
 
     def __repr__(self):
         jeje = str(self.status())
@@ -467,14 +461,11 @@ class Gameboard(object):
         for position in self.positions:
             position.draw_rectangle_on_image(self.source)
         if self.debug>0:
-            cv2.imshow("Game positions", self.source)
-        if self.debug>1:
-            cv2.waitKey(0)
+            cv2.imwrite("images/gamepositions/gamepositions.jpg", self.source)
 
     def _order_points(self, unordered_points):
         # for 4-by-4 field
         pts = np.array(unordered_points,dtype=int)
-
         # Sort by X coordinates
         xSorted = pts[np.argsort(pts[:,0]),:]
         # Grab left-most and right-most points from the sorted x-coordinates
@@ -547,8 +538,7 @@ class Gameboard(object):
         mask = cv2.bitwise_not(mask)
         
         if self.debug > 2:
-            cv2.imshow("mask", mask)
-            cv2.waitKey(0)
+            cv2.imwrite("images/test/mask/mask.jpg", mask)
         self.binary = cv2.bitwise_and(self.binary, mask)
 
     def _calculate_positions(self):
@@ -592,7 +582,8 @@ class Gameboard(object):
                 ]
             )
         
-
+            #cv2.rectangle(self.source,locations[0][0],locations[0][3],(0,0,0),4);
+        cv2.imwrite("images/test/default-image.jpg",self.source)
         for i in range(16):
             self.positions.append(
                     Gameposition(self.source, self.binary, "rc" + str(i),locations[i] , self.debug))
@@ -615,9 +606,7 @@ class Gameboard(object):
         binary = cv2.erode(binary, kernel)
         # Invert the image
         binary = 255-binary
-        if debug > 2:
-            cv2.imshow("binary",binary)
-            cv2.waitKey(0)
+
         return binary
 
     @staticmethod
@@ -647,18 +636,16 @@ class Gameboard(object):
         img_temp1 = cv2.erode(image, verticle_kernel, iterations=1)
         verticle_lines_img = cv2.dilate(img_temp1, verticle_kernel, iterations=1)
         if debug > 3:
-            cv2.imshow("vlines", verticle_lines_img)
-            cv2.waitKey(0)
+            cv2.imwrite("images/test/lines/vlines.jpg", verticle_lines_img)
         # Morphological operation to detect horizontal lines from an image
         img_temp2 = cv2.erode(image, hori_kernel, iterations=1)
         horizontal_lines_img = cv2.dilate(img_temp2, hori_kernel, iterations=1)
+        print(debug)
         if debug > 3:
-            cv2.imshow("hlines", horizontal_lines_img)
-            cv2.waitKey(0)
+            cv2.imwrite("images/test/lines/hlines.jpg", horizontal_lines_img)
         intersections = cv2.bitwise_and(verticle_lines_img, horizontal_lines_img)
         if debug > 2:
-            cv2.imshow("intersections", intersections)
-            cv2.waitKey(0)
+            cv2.imwrite("images/test/intersections/intersections.jpg", intersections)
         # Create a mask, combine verticle and horizontal lines
         mask = verticle_lines_img + horizontal_lines_img
         # Find contours
@@ -668,14 +655,16 @@ class Gameboard(object):
         red = (0,0,255)
         blue = (255,0,0)
 
+        if len(contours) != 25:
+            print("Warning! number of contours is not 25, but" + str(len(contours)) +". it must be getting error while ordering each position.")
+
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection
             approx = cv2.approxPolyDP(cnt, boardweight*cv2.arcLength(cnt, True), True)
 
             cv2.drawContours(source,[cnt],0,red,-1)
             if debug>3:
-                cv2.imshow("Showing game board intersection {0}".format(i+1),source)
-                cv2.waitKey(0)
+                cv2.imwrite("images/test/intersections/cnt-"+str(i)+".jpg",source)
 
             if len(approx) >0:
                 sum = 0
@@ -684,11 +673,11 @@ class Gameboard(object):
                 for elm in approx:
                     sum += elm[0]
                 center = sum
-                print(tuple(center))
+                #print(tuple(center))
                 positions.append(center)
             else:
                 raise Exception("Unable to detect game board intersections. Try to adjust the weight.")
-        print(positions[0])
+        #print(positions[0])
         w = abs(positions[0][0] - positions[1][0])
         #tuple, (x,y)
         return Gameboard(source, image, w, positions, debug=debug)
