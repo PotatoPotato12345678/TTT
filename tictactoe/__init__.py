@@ -10,7 +10,7 @@ from time import sleep
 
 from random import randint
 
-from scipy.spatial import distance as dist
+#from scipy.spatial import distance as dist
 
 PLAYERS = ["X","O"]
 
@@ -250,7 +250,7 @@ class GameEngine(object):
         if use_camera==False:
             image = cv2.imread(gameboard_file)
         else:
-            cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+            cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
             ret_val, image = cam.read()
 
             #cv2.imwrite(datetime.now().strftime("%H%M%S.jpg"), image)
@@ -323,8 +323,8 @@ class Gameposition(object):
         (tl, tr, bl, br) = tuple(positions)
         self.startpos = list(tl)
         self.endpos = list(br)
-        dx = int(round(dist.euclidean(tl, tr),0))
-        dy = int(round(dist.euclidean(tl, bl),0))
+        dx = int(round(math.dist(tl, tr),0))
+        dy = int(round(math.dist(tl, bl),0))
 
         
         # NOTE: self.image.shape returns [y,x] and not [x,y]
@@ -637,6 +637,8 @@ class Gameboard(object):
         
     @staticmethod
     def detect_game_board(source, debug=False):
+        cv2.imshow("a",source)
+        cv2.waitKey(0)
         image = Gameboard._preprocess_image_to_binary(source, debug)
         # Defining a kernel length
         kernel_length = np.array(image).shape[1]//8
@@ -673,7 +675,7 @@ class Gameboard(object):
         blue = (255,0,0)
 
         if len(contours) != 25:
-            print("Warning! number of contours is not 25, but" + str(len(contours)) +". it must be getting error while ordering each position.")
+            print("Warning! number of contours is not 25, but ---" + str(len(contours)) +"---. it must be getting error while ordering each position.")
 
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection
