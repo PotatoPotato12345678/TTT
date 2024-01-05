@@ -668,9 +668,6 @@ class Gameboard(object):
         red = (0,0,255)
         blue = (255,0,0)
 
-        if len(contours) != 25:
-            raise Exception("Unable to detect 4x4 game board");
-    
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection
             approx = cv2.approxPolyDP(cnt, boardweight*cv2.arcLength(cnt, True), True)
