@@ -21,12 +21,11 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 ## important things
 - Release the white button when putting Enter in Calibration
 - API uses 32bits python
+- AI is only available on last attack
 
-## current issue
-- when detecting over 25 intersections, get an error in dicision of each area
+
 
 ## working on
-- system will reuse intersection data from first detection.
 
 - combine AI with this project.
 --- 

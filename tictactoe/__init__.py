@@ -21,7 +21,6 @@ class GameEngine(object):
         self.currentbuffer = 0
         self._gameboard = None # temporary variable for opencv board
         self.moves = []
-        self.diff = None
         self.debug = debug
         self._winning_combinations = (
         [0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],
@@ -122,7 +121,7 @@ class GameEngine(object):
                     self._update_board(valid_pos, self.player)
                     self.currentplayer = self.enemy
             else:
-                pos = input("Enter position [0-24]: ")
+                pos = input("Enter position [0-15]: ")
                 valid_pos = self._is_move_valid(pos)
                 if (valid_pos != None):
                     valid=True
@@ -131,8 +130,10 @@ class GameEngine(object):
 
     def _make_move(self):
         if self.currentplayer == self.player:
+            print("Your move: {0}".format(self.currentplayer))
             self._ask_player_move()
         else:
+            print("AI's move: {0}".format(self.currentplayer))
             self._ai_make_move()
 
     def init_gameboard_ai(self):
@@ -216,7 +217,7 @@ class GameEngine(object):
             return random.choice(available_pos)
     """  
  
-    def make_best_move(self, board, player,difficulty):
+    def make_best_move(self, board, player):
         #All random choice
         available_pos = self._get_all_free_pos(board)
         move = random.choice(available_pos)
@@ -225,7 +226,9 @@ class GameEngine(object):
 
     def _ai_make_move(self):
         origBoard = self.gameboard
-        pos = self.make_best_move(origBoard,self.enemy,self.diff) 
+        pos = self.make_best_move(origBoard,self.enemy) 
+            
+        print(origBoard,pos)
         #pos = self._get_free_position()
         if self._dm != None:
             self._dm.buffer[self.currentbuffer].pick(self._dm)
@@ -267,16 +270,6 @@ class GameEngine(object):
 
             raise Exception("Board is not empty. Please clear board.")
 
-        difficulty = int(input(" 1: Easy \n 2: Medium \n 3: Hard \n 4: Expert \n Choose a difficulty: "))
-        if difficulty == 1:
-            self.diff = "Easy"
-        elif difficulty == 2:
-            self.diff = "Medium"
-        elif difficulty == 3:
-            self.diff = "Hard"
-        else:
-            self.diff = "Expert"
-
         while (not self._is_game_won()):
             """try:
                 self._parse_gameboard(use_camera, gameboard_file)
@@ -284,7 +277,6 @@ class GameEngine(object):
                 print("Unable to detect game board.")
                 sleep(1)
                 continue"""
-            print("Your move player {0}".format(self.currentplayer))
             #pdb.set_trace()
             self._make_move()
             self.show_gameboard()
@@ -561,8 +553,6 @@ class Gameboard(object):
 
         locations =[]
         w = 3
-        aa = 0
-        print(intersections)
         for i in range(20):
             if (i+1)%5 == 0:
                 continue;
@@ -596,7 +586,6 @@ class Gameboard(object):
             c+=1;
         d = 0;
         for l in intersections:
-            print(l)
             cv2.rectangle(self.source,l,l,(0,255,0),10);
             cv2.imwrite("images/test/intersections/ordered/p-"+str(d)+".jpg",self.source);
             d+=1;
@@ -637,8 +626,6 @@ class Gameboard(object):
         
     @staticmethod
     def detect_game_board(source, debug=False):
-        cv2.imshow("a",source)
-        cv2.waitKey(0)
         image = Gameboard._preprocess_image_to_binary(source, debug)
         # Defining a kernel length
         kernel_length = np.array(image).shape[1]//8
@@ -686,8 +673,6 @@ class Gameboard(object):
 
             if len(approx) >0:
                 sum = 0
-                sumx = 0
-                sumy = 0 
                 for elm in approx:
                     sum += elm
                 center = sum/len(approx)
