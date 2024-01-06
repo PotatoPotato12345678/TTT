@@ -351,13 +351,14 @@ class Gameposition(object):
         coordinate = (int((self.endpos[0]+self.startpos[0])/2), int((self.endpos[1]+self.startpos[1])/2))
         font = cv2.FONT_HERSHEY_SIMPLEX
         black = (0,0,0)
-        cv2.putText(self.source, self.title, coordinate, font, 2, black, 2, cv2.LINE_AA)
+        cv2.putText(self.source, self.title, coordinate, font, 1, black, 2, cv2.LINE_AA)
 
     def draw_symbol_on_position(self, symbol, position):
         coordinate = tuple(self.positions[0])
         font = cv2.FONT_HERSHEY_SIMPLEX
         black = (0,0,0)
-        cv2.putText(self.source, symbol, coordinate, font, 4, black, 2, cv2.LINE_AA)
+        cv2.putText(self.source, symbol, coordinate, font, 1, black, 2, cv2.LINE_AA)
+        cv2.imwrite("images/test/text/symbol"+self.title+".jpg",self.source)
     
     def is_checked(self):
         return False
@@ -402,7 +403,6 @@ class Gameposition(object):
             elif (self._detect_if_x(solidity)):
                 found = True
                 self.symbol = "X"
-            
             if found:
                 if self.debug>0:
                     print("{0}: Contours: {1}, Solidity: {2}, Ratio: {3}, Detected: {4}".format(self.title, len(cnts), solidity, ratio, self.symbol))
@@ -411,7 +411,7 @@ class Gameposition(object):
                     cv2.imwrite("images/test/symbol/"+self.title+".jpg", img)
                 break
         if (self.symbol in ("O","X")):
-            cv2.putText(self.roi_in_source, self.symbol, (int(x+(w/2)), int(y+(h/2))), cv2.FONT_HERSHEY_SIMPLEX, 1.25, (0, 0, 255), 4)
+            #cv2.putText(self.roi_in_source, self.symbol, (int(x+(w/2)), int(y+(h/2))), cv2.FONT_HERSHEY_SIMPLEX, 1.25, (0, 0, 255), 4)
             return True
         return False
     
