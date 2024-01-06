@@ -10,6 +10,10 @@ from time import sleep
 
 from random import randint
 
+from tictactoe.utils import load_checkpoint
+from tictactoe.model import Model
+from tictactoe.environment import TicTacToe
+
 #from scipy.spatial import distance as dist
 
 PLAYERS = ["X","O"]
@@ -180,56 +184,15 @@ class GameEngine(object):
                 newBoard = self.update_ai_board(var, "?", newBoard)
                 bestVal = min(bestVal, moveVal)
             return bestVal
-
-
-    """
-    def make_best_move(self, board, player,difficulty):
-        if difficulty == "Easy":
-            diff_random = 25
-        elif difficulty == "Medium":
-            diff_random = 50
-        elif difficulty == "Hard":
-            diff_random = 75
-        else:
-            diff_random = 100
-        # Generate random
-        rnum = randint(0, 100)
-        # Find available moves
-        initValue = 50
-        best_choices = []
-        available_pos = self._get_all_free_pos(board)
-       # if rnum > diff_random:
-        move = random.choice(available_pos)
-        return move
-        #else:
-        for move in available_pos:
-            board = self.update_ai_board(move, player, board)
-            moveVal = self.minimax(board, self._change_player(player))
-            board = self.update_ai_board(move, "?", board)
-            if moveVal > initValue:
-                best_choices = [move]
-                return move
-            elif moveVal == initValue:
-                best_choices.append(move)
-        if len(best_choices)>0:
-            return random.choice(best_choices)
-        else:
-            return random.choice(available_pos)
-    """  
- 
-    def make_best_move(self, board, player):
-        #All random choice
-        available_pos = self._get_all_free_pos(board)
-        move = random.choice(available_pos)
-        return move
-
-
+       
     def _ai_make_move(self):
         origBoard = self.gameboard
-        pos = self.make_best_move(origBoard,self.enemy) 
-            
-        print(origBoard,pos)
-        #pos = self._get_free_position()
+        args = {"field_size":4,"num_hidden_units":128,"num_layers":1,"dropout_probability":0.0,"algorithm":'deep_q_learning',"model_name":'agent_a'}
+        model = Model(args=args)
+        load_checkpoint(model=model, args=args)
+        env = TicTacToe(size=args["field_size"])
+        pos = env.play(model=model,origboard=origBoard)
+
         if self._dm != None:
             self._dm.buffer[self.currentbuffer].pick(self._dm)
             #self._dm.camera.movej_nooffset(self._dm, wait=0)
