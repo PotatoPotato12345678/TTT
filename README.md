@@ -1,17 +1,11 @@
 # Description
 
-### Goal
+
 Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 
 ### Two big parts in implementation
 - play with Dobot
 - reinforcement learning
-
-### Progress so far
-- implementation for game system and deep-Q-learning
-
-### Future works
-- communicate the game system with AI via a server.
 
 ### Remaining works
 
@@ -26,7 +20,6 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 - Release the white button when putting Enter in Calibration
 - API is available only for 32bits python
 - AI is available only for 64bits python
-- AI is only available on last attack
 
 ---
 
@@ -48,22 +41,31 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 
 - ai_setup.py: AI executiion file
 
-#### server part
-- server_setup.py: build a localhost server
+#### communication part between AI Game System and AI
+- data_delivery.txt
 
 
-## working on
-- combine AI with this project.
+## Start up
 
-64bit python
+needs two environments: 64bit python, 32bit python
+
+preparation:
+- install packages
+- install DobotStudio
+- connection to Dobot
+
+
+1. run the following command with 64bit python
 ```
-py server_setup.py
 py ai_setup.py
 ```
 
-32bit python
+2. run the following command with 32bit python
 ```
 py Calibrate_Dobot.py
+```
+
+```
 py play.py
 ```
 
@@ -74,7 +76,7 @@ py play.py
 #### AI
 - python 3.10(64bit) : less than 3.11(64bit) to use pyTorch 
 
-#### Game system and server
+#### Game system
 - python 3.10-32(32bit) : must use 32bit python to use API
 
 ---
@@ -92,7 +94,7 @@ py play.py
 
 - torch
 
-### Game system and server parts
+### Game system and
 - numpy
 
 - opencv-python

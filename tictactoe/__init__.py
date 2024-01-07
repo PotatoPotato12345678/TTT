@@ -9,10 +9,7 @@ from datetime import datetime
 from time import sleep
 
 from random import randint
-
-from tictactoe.utils import load_checkpoint
-from tictactoe.model import Model
-from tictactoe.environment import TicTacToe
+import time
 
 #from scipy.spatial import distance as dist
 
@@ -184,14 +181,26 @@ class GameEngine(object):
                 newBoard = self.update_ai_board(var, "?", newBoard)
                 bestVal = min(bestVal, moveVal)
             return bestVal
+        
+    def deliver_board(self,origBoard):
+        path ="data_delivery.txt"
+        with open(path, mode='w') as f:
+            f.write(str(origBoard))
+        elem =[origBoard]
+
+        while True:
+            time.sleep(1)
+            with open(path) as f:
+                l = f.read()
+                if l == elem:
+                    continue
+                return int(l)
+            
        
     def _ai_make_move(self):
         origBoard = self.gameboard
-        args = {"field_size":4,"num_hidden_units":128,"num_layers":1,"dropout_probability":0.0,"algorithm":'deep_q_learning',"model_name":'agent_a'}
-        model = Model(args=args)
-        load_checkpoint(model=model, args=args)
-        env = TicTacToe(size=args["field_size"])
-        pos = env.play(model=model,origboard=origBoard)
+
+        pos = self.deliver_board(origBoard)
 
         if self._dm != None:
             self._dm.buffer[self.currentbuffer].pick(self._dm)
