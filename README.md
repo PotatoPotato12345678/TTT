@@ -1,4 +1,4 @@
-# Description about this project.
+# Description
 
 ### Goal
 Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
@@ -8,29 +8,116 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 - reinforcement learning
 
 ### Progress so far
-- play on a 4-by-4 with random choice
-
+- implementation for game system and deep-Q-learning
 
 ### Future works
-- Understanding and implementing reinforcement learning
-    -- details
-- Fixing the detection system.
+- communicate the game system with AI via a server.
+
+### Remaining works
+
+- accuracy of detection
+    - when detecting over or less than 25 intersections
+
+- understanding deep-Q-learning
 
 ---
 
 ## important things
 - Release the white button when putting Enter in Calibration
-- API uses 32bits python
+- API is available only for 32bits python
+- AI is available only for 64bits python
 - AI is only available on last attack
 
+---
+
+## system structure
+
+#### Game System Part
+- tictactoe/\__init__.py : main game system
+
+- play.py : main execution file, call Dobot API, manages parser arguments
+    - Dobot.py: interface of Dobot API
+    - Dobot directory: API itself
+
+- Calibrate_Dobot.py: set up arm positions for each area
+    - calibration.data: stored each arm position
+
+#### AI part
+- tictactoe/environment.py: main AI system
+    - by reference to model.py, utils.py, weights/agent_a_deep_q_learning.pth
+
+- ai_setup.py: AI executiion file
+
+#### server part
+- server_setup.py: build a localhost server
 
 
 ## working on
-
 - combine AI with this project.
+
+64bit python
+```
+py server_setup.py
+py ai_setup.py
+```
+
+32bit python
+```
+py Calibrate_Dobot.py
+py play.py
+```
+
+---
+
+## working environment
+
+#### AI
+- python 3.10(64bit) : less than 3.11(64bit) to use pyTorch 
+
+#### Game system and server
+- python 3.10-32(32bit) : must use 32bit python to use API
+
+---
+
+## Packages
+
+### AI part 
+- numpy
+
+- opencv-python
+
+- imutils
+
+- tensorboard 
+
+- torch
+
+### Game system and server parts
+- numpy
+
+- opencv-python
+
+- imutils
+
+please make sure available python version to each package in case that you can not install these.
+
+please make sure to install packages into a desired pip version.
+
+#### How to change a pip version (windows)
+- install a specified Python version from python.org
+
+```
+py -0p : check current and available python versions
+py -*.** -m pip list : (-*.** : put version number) check installed packages in specified python version.
+py -*.** -m pip install *** : install *** into specified python version.
+py -*.** filename : run filename with specified version
+```
+#### change a default pip version (windows)
+change PYTHON_PATH to a desired version from environment setting
+
 --- 
 
-## About API
+### About API
 
 DobotDll.dll is a API and it is written in C language
 <details><summary>details</summary><div>
@@ -77,9 +164,11 @@ extern "C" DOBOTDLLSHARED_EXPORT int GetPTPCommonParams(PTPCommonParams *ptpComm
 
 
 
-## Overflow of API error
+### Overflow of API error(fixed)
 
-solution: changing to new laptop.
+solution: ~~changing to new laptop.~~
+
+solution: manage python verision properly
 
 notice: OS update is not the cause.
 
