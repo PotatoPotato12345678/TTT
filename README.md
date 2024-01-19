@@ -16,7 +16,8 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 - [About API](#about-api)
   - [Overflow of API error in October, 2023 (fixed)](#overflow-of-api-error-in-october-2023-fixed)
 - [System Structure](#system-structure)
-- [Possible Errors and addional informaiton](#possible-errors-and-addional-informaiton)
+- [Possible Errors](#possible-errors)
+- [Photos](#photos)
 
 
 ## What we improved in this fall semester in 2023
@@ -363,7 +364,7 @@ Game system and AI system cannot communicate to each other directly. Therefore, 
 ![system-structure](https://github.com/PotatoPotato12345678/TTT/assets/146937279/08b4f76e-a057-463d-a24f-cc1aff4ec7b7)
 
 
-# Possible Errors and addional informaiton
+# Possible Errors
 
 The following things are parts of possible Errors. When it doesn't go well after trying a solution, please try other solution.
 
@@ -401,3 +402,12 @@ __In the middle of game process__
 In `py -3.10 ai_setup.py`
 
 If you want to train AI again, please use this project https://github.com/kaifishr/TicTacToe. After training with deep_q_learning, please put agent_a_deep_q_learning.pth into weights directory.
+
+# Photos
+
+__area__
+
+![rc1](https://github.com/PotatoPotato12345678/TTT/assets/146937279/d30e0f2d-c3f5-445f-9818-ff564c47b773)
+
+__Intersection__
+![cnt-24](https://github.com/PotatoPotato12345678/TTT/assets/146937279/88f33687-5307-4064-ac34-d5d7961fa3d7)
