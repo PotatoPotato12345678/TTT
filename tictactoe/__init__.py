@@ -634,7 +634,7 @@ class Gameboard(object):
         blue = (255,0,0)
 
         if len(contours) != 25:
-            print("Warning! number of contours is not 25, but ---" + str(len(contours)) +"---. it must be getting error while ordering each position.")
+            print("Warning! number of contours is not 25, but ---" + str(len(contours)) +"---. it may be getting error while ordering each position.")
 
         for i,cnt in enumerate(contours):
             boardweight = 0.1 # decrease this for finer detection

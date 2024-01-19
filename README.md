@@ -16,6 +16,7 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 - [About API](#about-api)
   - [Overflow of API error in October, 2023 (fixed)](#overflow-of-api-error-in-october-2023-fixed)
 - [System Structure](#system-structure)
+- [Possible Errors and addional informaiton](#possible-errors-and-addional-informaiton)
 
 
 ## What we improved in this fall semester in 2023
@@ -47,7 +48,7 @@ needs two environments: 64bit python, 32bit python on windows
 
 2. install DobotStudio (DOBOT Magician) v1.9.4 · Jan 10, 2022
 
-3. install python 3.10 (64bit) series and python 3.10 (32bit) series
+3. install python 3.10 (64bit) and python 3.10 (32bit) series installer from https://www.python.org/downloads/windows/
 
 ### Install packages
 Run the following code
@@ -59,8 +60,17 @@ py -3.10 -m pip install -r ai_requirements.txt
 
 ### run the project
 
+Create a folder named "PBL2_project" in Desktop 
+
+Open it with Editer (VSCode)
+
+Open terminal from "New Terminal" in "Terminal" on the menu bar
+
+Run the following command.
+
 ```
 git clone https://github.com/PotatoPotato12345678/TTT
+cd TTT
 ```
 
 Run the following code.
@@ -71,11 +81,17 @@ py -3.10 ai_setup.py
 
 It doesn't output anything, but it's fine.
 
-open a new windows, run the following code, and follow the instruction on terminal.
+create a new Terminal from "New Terminal" in "Terminal"
+
+Run the following command.
+If it doesn't work, make sure your current directory on terminal using `cd`, `pwd` command. The path must be like this: `C:\Users\Robolab\Desktop\PBL2_project\TTT`
 
 ```
-py -3.10-32 Calibrate_Dobot.py
+cd TTT
+py -3.10-32 .\Calibrate_Dobot.py
 ```
+
+
 
 > WARNING! 
 >
@@ -111,20 +127,20 @@ put '1' and push Enter.
 >            +-------------+   
 D is Dobot. Calibrate the field positions from 1 to 16, the buffer positions, Camera position, and pose position in order following the instruction.
 
-- field position:  where the arm put a piece
+- __field position__:  where the arm put a piece
 
-- buffer position: where the arm picks up a piece
+- __buffer position__: where the arm picks up a piece
 
-- camera position: where camera see the game field
+- __camera position__: where camera see the game field
 
-- pose position: where the arm move after game ends
+- __pose position__: where the arm move after game ends
 
 The Dobot arm moves while pushing the white button on the arm.
 Make sure the light is green, release the white button when putting Enter.
 
 When setting camera and pose position, open the software "Logitech Camera Settings" and adjust a point. You can use WideScreen or Standard. Close the app before putting Enter key.
 
-After calibration is done, run the following code.
+After calibration is done, run the following command.
 
 ```
 py -3.10-32 play.py
@@ -135,6 +151,8 @@ First move is randomly decided. a person put 'X', AI put 'O'.
 Push Enter after putting your piece.
 
 The win condition is to line up 4 pieces in a row.
+
+You can start a game without Dobot with `play.py -m`: It uses /images/Jan5/empty.jpg as a empty field.
 
 ---
 
@@ -198,19 +216,21 @@ please make sure to install packages into a desired pip version.
 --- 
 # How to change python version with pip
 
-```
-py -0p : check current and available python versions on the windows. current version is shown with '*' at the end.
-py -*.** -m pip list : (-*.** : put version number) check installed packages in specified python version.
-py -*.** -m pip install *** : install *** into specified python version.
-py -*.** filename : run filename with specified version
-```
+`py -0p` : check current and available python versions on the windows. current version is shown with '*' at the end.
+
+`py -*.** -m pip list` : (-*.** : put version number) check installed packages in specified python version.
+
+`py -*.** -m pip install ***` : install *** into specified python version.
+
+`py -*.** filename` : run filename with specified version
+
 
 __change a default pip version__
 1. go settings
 2. go Edit Environment variables for your account
 3. Edit PYTHON_PATH to a desired version in System variables
-    the name should be same as the one indicated by command "py -0p".
-4. Restart terminal or PC and comfirm current version by "py -0p"
+    the name should be same as the one indicated by command `py -0p`.
+4. Restart terminal or PC and comfirm current version by `py -0p`
 
 ---
 
@@ -338,3 +358,42 @@ It doesn't return correct value.
 ---
 
 # System Structure
+
+# Possible Errors and addional informaiton
+
+The following things are parts of possible Errors. When it doesn't go well after trying a solution, please try other solution.
+
+In `py -3.10-32 .\Calibrate_Dobot.py`
+
+- Dobot doesn't put a piece onto a correct position: Some Calibration steps don't go well. please calibrate it carefully.
+
+- a piece sticks to Dobot arm: It's a physical problem. Please put tape on the piece.
+
+In `py -3.10-32 play.py`
+
+__Before first movement__
+
+- __OSError:[WinError 193]%1 is not a valid Win32 application__: Make sure you run play.py with `py -3.10-32 play.py`. This Error happens when you use 64bit python.
+
+- __ValueError__: make sure logitech camera is used in detection. the small lights on PC is turned on when camera on PC is used. Please change the first argument in line 228 in \__init__.py to
+```
+cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+```
+or
+```
+cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+```
+
+If it doesn't work yet, please run `py -3.10-32 play.py -d -d -d -d -d`. You then realize images in images/test are updated.
+
+- __Exception: Board is not empty__: Make sure any pieces are not on the field.
+
+__In the middle of game process__
+
+- __Error: Unable to parse gameboard__ or <br>__Unable to detect game board intersections. Try to adjust the weight.__: Make sure anything is not on intersection. If intersection is covered, game board detection doesn't go well. Shadow of pieces might cover it.
+
+- __No new token on board__: Open Logitech Camera Settings and make sure symbol 'X' is shown in camera view. Sometimes, Light reflection hide the symbol.
+
+In `py -3.10 ai_setup.py`
+
+If you want to train AI again, please use this project https://github.com/kaifishr/TicTacToe. After training with deep_q_learning, please put agent_a_deep_q_learning.pth into weights directory.
