@@ -1,127 +1,218 @@
-# Description
-
+<!-- omit from toc -->
+# Description About TicTacToe With Deep-Q Learning
 
 Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 
-### Two big parts in implementation
-- play with Dobot
+<!-- omit from toc -->
+## Table of Contents
+- [Start up](#start-up)
+    - [Install core software](#install-core-software)
+    - [Install packages](#install-packages)
+    - [run the project](#run-the-project)
+- [Role of each file](#role-of-each-file)
+- [working environment](#working-environment)
+- [Packages](#packages)
+- [How to change python version with pip](#how-to-change-python-version-with-pip)
+- [About API](#about-api)
+  - [Overflow of API error in October, 2023 (fixed)](#overflow-of-api-error-in-october-2023-fixed)
+- [System Structure](#system-structure)
+
+
+## What we improved in this fall semester in 2023
+- extended field size to 4-by-4 field.
+- combined AI with TicTacToe.
+
+## Two big parts in implementation
+- 4-by-4 TicTacToe on Dobot
 - reinforcement learning
 
-### Remaining works
+## References
+3-by-3 TicTacToe on Dobot: https://github.com/v3gard/opencv_tictactoe_engine
 
-- accuracy of detection
-    - when detecting over or less than 25 intersections
-
-- understanding deep-Q-learning
+Deep-Q-learnig on n-by-n field TicTacToe: https://github.com/kaifishr/TicTacToe
 
 ---
 
-## important things
-- Release the white button when putting Enter in Calibration
+## Important things
 - API is available only for 32bits python
 - AI is available only for 64bits python
+---
+
+# Start up
+needs two environments: 64bit python, 32bit python on windows
+
+
+### Install core software
+1. install Logitech Camera Settings
+
+2. install DobotStudio (DOBOT Magician) v1.9.4 · Jan 10, 2022
+
+3. install python 3.10 (64bit) series and python 3.10 (32bit) series
+
+### Install packages
+Run the following code
+
+```
+py -3.10-32 -m pip install -r game_requirements.txt
+py -3.10 -m pip install -r ai_requirements.txt
+```
+
+### run the project
+
+Run the following code.
+
+```
+py -3.10 ai_setup.py
+```
+
+It doesn't output anything, but it's fine.
+
+open a new windows, run the following code, and follow the instruction on terminal.
+
+```
+py -3.10-32 Calibrate_Dobot.py
+```
+
+> WARNING! 
+>
+> Calibration data already exists!
+>
+>If you continue, the existing data will be deleted.
+>
+>Continue? [y\/N]
+
+If above statement is printed, put 'y' and push Enter.
+
+>1\. Calibrate Dobot for Tic Tac Toe board
+>
+>2\. Show Dobot arm position
+>
+>3\. Reinitialize home position
+>
+>4\. Test calibration (without tokens)
+>
+>5\. Pick and place token
+>
+>X. Exit
+
+put '1' and push Enter.
+
+
+>            +-------------+
+>            |  1  2  3  4 | 
+>            |  5  6  7  8 |  O1 05
+>            |  9 10 11 12 |  O2 06
+>            | 13 14 15 16 |  O3 07
+>            |     D       |  04 08
+>            +-------------+   
+D is Dobot. Calibrate the field positions from 1 to 16, the buffer positions, Camera position, and pose position in order following the instruction.
+
+- field position:  where the arm put a piece
+
+- buffer position: where the arm picks up a piece
+
+- camera position: where camera see the game field
+
+- pose position: where the arm move after game ends
+
+The Dobot arm moves while pushing the white button on the arm.
+Make sure the light is green, release the white button when putting Enter.
+
+When setting camera and pose position, open the software "Logitech Camera Settings" and adjust a point. You can use WideScreen or Standard. Close the app before putting Enter key.
+
+After calibration is done, run the following code.
+
+```
+py -3.10-32 play.py
+```
+
+First move is randomly decided. a person put 'X', AI put 'O'.
+
+Push Enter after putting your piece.
+
+The win condition is to line up 4 pieces in a row.
 
 ---
 
-## system structure
+# Role of each file
 
-#### Game System Part
+__Game System Part__
 - tictactoe/\__init__.py : main game system
 
-- play.py : main execution file, call Dobot API, manages parser arguments
+- play.py : Game system execution file, call Dobot API, manages parser arguments
     - Dobot.py: interface of Dobot API
     - Dobot directory: API itself
 
 - Calibrate_Dobot.py: set up arm positions for each area
     - calibration.data: stored each arm position
 
-#### AI part
+__AI part__
 - tictactoe/environment.py: main AI system
     - by reference to model.py, utils.py, weights/agent_a_deep_q_learning.pth
 
 - ai_setup.py: AI executiion file
 
-#### communication part between AI Game System and AI
+__Communication part between AI Game System and AI__
 - data_delivery.txt
 
+--- 
 
-## Start up
+# working environment
 
-needs two environments: 64bit python, 32bit python
-
-preparation:
-- install packages
-- install DobotStudio
-- connection to Dobot
-
-
-1. run the following command with 64bit python
-```
-py ai_setup.py
-```
-
-2. run the following command with 32bit python
-```
-py Calibrate_Dobot.py
-```
-
-```
-py play.py
-```
-
----
-
-## working environment
-
-#### AI
+__AI__
 - python 3.10(64bit) : less than 3.11(64bit) to use pyTorch 
 
-#### Game system
-- python 3.10-32(32bit) : must use 32bit python to use API
+__Game system__
+- python 3.10-32(32bit) : 32bit python to use API
 
 ---
 
-## Packages
+# Packages
 
-### AI part 
-- numpy
+__AI part (version: 3.10)__
+- numpy==1.26.3
 
-- opencv-python
+- opencv-python==4.9.0.80
 
-- imutils
+- imutils==0.5.4
 
-- tensorboard 
+- tensorboard==2.15.1
 
-- torch
+- torch==2.1.2
 
-### Game system and
-- numpy
+__Game system and API part (version: 3.10-32)__
+- numpy==1.26.3
 
-- opencv-python
+- opencv-python==4.9.0.80
 
-- imutils
+- imutils==0.5.4
 
 please make sure available python version to each package in case that you can not install these.
 
 please make sure to install packages into a desired pip version.
 
-#### How to change a pip version (windows)
-- install a specified Python version from python.org
+--- 
+# How to change python version with pip
 
 ```
-py -0p : check current and available python versions
+py -0p : check current and available python versions on the windows. current version is shown with '*' at the end.
 py -*.** -m pip list : (-*.** : put version number) check installed packages in specified python version.
 py -*.** -m pip install *** : install *** into specified python version.
 py -*.** filename : run filename with specified version
 ```
-#### change a default pip version (windows)
-change PYTHON_PATH to a desired version from environment setting
 
---- 
+__change a default pip version__
+1. go settings
+2. go Edit Environment variables for your account
+3. Edit PYTHON_PATH to a desired version in System variables
+    the name should be same as the one indicated by command "py -0p".
+4. Restart terminal or PC and comfirm current version by "py -0p"
 
-### About API
+---
 
-DobotDll.dll is a API and it is written in C language
+# About API
+
+DobotDll.dll is a API and it is written in C language and it needs 32bit python.
 <details><summary>details</summary><div>
 
 ```Python
@@ -162,22 +253,18 @@ extern "C" DOBOTDLLSHARED_EXPORT int GetPTPCommonParams(PTPCommonParams *ptpComm
 
 </div></details>
 
----
 
-
-
-### Overflow of API error(fixed)
-
-solution: ~~changing to new laptop.~~
+## Overflow of API error in October, 2023 (fixed)
 
 solution: manage python verision properly
 
-notice: OS update is not the cause.
+From this issue, we realized API uses 32bit python.
 
 <details><summary>code details</summary><div>
 
+<br>
 
-### play.py : try to create an instance of DobotManger class in Dobot.py
+__play.py : try to create an instance of DobotManger class in Dobot.py__
 
 ```Python
 #play.py
@@ -190,8 +277,8 @@ dm = DobotManager(dType, api)
 ```
 
 
+__DobotManager class :try to initialize the instance__
 
-### DobotManager class :try to initialize the instance
 ```Python
 # Dobot.py
 class DobotManager(object):
@@ -206,14 +293,16 @@ class DobotManager(object):
         self.set_speed(velocity=50)
 ```
 
-### self.set_speed function is called
+__self.set_speed function is called__
+
 ```Python
     #Dobot.py
     def set_speed(self, velocity=100, acceleration=100):
         self.dType.SetPTPCommonParams(self.api, velocity, acceleration, isQueued=0)
 ```
 
-### call self.dType.SetPTPCommonParams function in DobotDllType.py
+__call self.dType.SetPTPCommonParams function in DobotDllType.py__
+
 ```Python
 def SetPTPCommonParams(api, velocityRatio, accelerationRatio, isQueued=0):
     pbParam = PTPCommonParams()
@@ -229,7 +318,8 @@ def SetPTPCommonParams(api, velocityRatio, accelerationRatio, isQueued=0):
     return [queuedCmdIndex.value]
 ```
 
-### call api.SetPTPCommonParams function in DobotDll.h.
+__call api.SetPTPCommonParams function in DobotDll.h.__
+
 ```Python
 # DobotDll.h
 extern "C" DOBOTDLLSHARED_EXPORT int SetPTPCommonParams(PTPCommonParams *ptpCommonParams, bool isQueued, uint64_t *queuedCmdIndex);
@@ -240,6 +330,7 @@ It doesn't return correct value.
 </div></details>
 
 --- 
+---
+---
 
-
-
+# System Structure
