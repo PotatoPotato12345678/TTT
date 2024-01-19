@@ -42,6 +42,7 @@ http://qtandopencv.blogspot.com/2015/11/analyze-tic-tac-toe-by-computer-vision.h
 Deep-Q-learnig on n-by-n field TicTacToe: 
 
 https://github.com/kaifishr/TicTacToe
+
 ---
 
 ## Important things
