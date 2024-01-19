@@ -405,9 +405,15 @@ If you want to train AI again, please use this project https://github.com/kaifis
 
 # Photos
 
+__arrangement__
+
+![IMG_7542](https://github.com/PotatoPotato12345678/TTT/assets/146937279/b8165c89-e65b-4041-a4bb-50c8d79b9ec3)
+![IMG_7541](https://github.com/PotatoPotato12345678/TTT/assets/146937279/a082cfb7-712e-46f9-a996-878c791e663d)
+
 __area__
 
 ![rc1](https://github.com/PotatoPotato12345678/TTT/assets/146937279/d30e0f2d-c3f5-445f-9818-ff564c47b773)
 
 __Intersection__
+
 ![cnt-24](https://github.com/PotatoPotato12345678/TTT/assets/146937279/88f33687-5307-4064-ac34-d5d7961fa3d7)
