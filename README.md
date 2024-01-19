@@ -29,10 +29,19 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 - reinforcement learning
 
 ## References
-3-by-3 TicTacToe on Dobot: https://github.com/v3gard/opencv_tictactoe_engine
+3-by-3 TicTacToe on Dobot: 
 
-Deep-Q-learnig on n-by-n field TicTacToe: https://github.com/kaifishr/TicTacToe
+https://github.com/v3gard/opencv_tictactoe_engine
 
+symbol detection:
+
+https://gurus.pyimagesearch.com/lesson-sample-advanced-contour-properties/
+
+http://qtandopencv.blogspot.com/2015/11/analyze-tic-tac-toe-by-computer-vision.html
+
+Deep-Q-learnig on n-by-n field TicTacToe: 
+
+https://github.com/kaifishr/TicTacToe
 ---
 
 ## Important things
