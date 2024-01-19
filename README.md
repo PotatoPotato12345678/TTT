@@ -59,6 +59,10 @@ py -3.10 -m pip install -r ai_requirements.txt
 
 ### run the project
 
+```
+git clone https://github.com/PotatoPotato12345678/TTT
+```
+
 Run the following code.
 
 ```
