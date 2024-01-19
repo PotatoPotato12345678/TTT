@@ -358,6 +358,10 @@ It doesn't return correct value.
 ---
 
 # System Structure
+Game system and AI system cannot communicate to each other directly. Therefore, there is a intermediary file called data_delivery.txt. \__init__.py and ai_setup.py read the file every 1 second, and rewrite it if necessary.
+
+![system-structure](https://github.com/PotatoPotato12345678/TTT/assets/146937279/08b4f76e-a057-463d-a24f-cc1aff4ec7b7)
+
 
 # Possible Errors and addional informaiton
 
