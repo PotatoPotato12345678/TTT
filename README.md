@@ -60,9 +60,9 @@ py -3.10 -m pip install -r ai_requirements.txt
 
 ### run the project
 
-Create a folder named "PBL2_project" in Desktop 
+Create a folder named "TTT_project" in Desktop 
 
-Open it with Editer (VSCode)
+Open it with Editer (Visual Studio Code)
 
 Open terminal from "New Terminal" in "Terminal" on the menu bar
 
@@ -84,7 +84,7 @@ It doesn't output anything, but it's fine.
 create a new Terminal from "New Terminal" in "Terminal"
 
 Run the following command.
-If it doesn't work, make sure your current directory on terminal using `cd`, `pwd` command. The path must be like this: `C:\Users\Robolab\Desktop\PBL2_project\TTT`
+If it doesn't work, make sure your current directory on terminal using `cd`, `pwd` command. The path must be like this: `C:\Users\Robolab\Desktop\TTT_project\TTT`
 
 ```
 cd TTT
@@ -373,7 +373,7 @@ In `py -3.10-32 play.py`
 
 __Before first movement__
 
-- __OSError:[WinError 193]%1 is not a valid Win32 application__: Make sure you run play.py with `py -3.10-32 play.py`. This Error happens when you use 64bit python.
+- __OSError:[WinError 193]%1 is not a valid Win32 application__: Make sure you run with `py -3.10-32 play.py`. This Error happens when you use 64bit python.
 
 - __ValueError__: make sure logitech camera is used in detection. the small lights on PC is turned on when camera on PC is used. Please change the first argument in line 228 in \__init__.py to
 ```
