@@ -44,6 +44,10 @@ Deep-Q-learnig on n-by-n field TicTacToe:
 
 https://github.com/kaifishr/TicTacToe
 
+## Demo Video
+
+https://www.youtube.com/watch?v=h1LvrSGCkxI
+
 ---
 
 ## Important things
