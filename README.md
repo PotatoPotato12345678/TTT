@@ -61,15 +61,7 @@ needs two environments: 64bit python, 32bit python on windows
 
 3. install python 3.10 (64bit) and python 3.10 (32bit) series installer from https://www.python.org/downloads/windows/
 
-### Install packages
-Run the following code
-
-```
-py -3.10-32 -m pip install -r game_requirements.txt
-py -3.10 -m pip install -r ai_requirements.txt
-```
-
-### run the project
+### install this project from https://github.com/PotatoPotato12345678/TTT
 
 Create a folder named "TTT_project" in Desktop 
 
@@ -83,6 +75,17 @@ Run the following command.
 git clone https://github.com/PotatoPotato12345678/TTT
 cd TTT
 ```
+
+### Install packages
+Run the following code
+
+```
+py -3.10-32 -m pip install -r game_requirements.txt
+py -3.10 -m pip install -r ai_requirements.txt
+```
+
+
+### run the project
 
 Run the following code.
 
