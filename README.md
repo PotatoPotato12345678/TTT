@@ -7,6 +7,7 @@ Dobot plays tictactoe on a 4-by-4 field with reinforcement learning.
 ## Table of Contents
 - [Start up](#start-up)
     - [Install core software](#install-core-software)
+    - [install this project from https://github.com/PotatoPotato12345678/TTT](#install-this-project-from-httpsgithubcompotatopotato12345678ttt)
     - [Install packages](#install-packages)
     - [run the project](#run-the-project)
 - [Role of each file](#role-of-each-file)
@@ -417,6 +418,12 @@ In `py -3.10 ai_setup.py`
 If you want to train AI again, please use this project https://github.com/kaifishr/TicTacToe. After training with deep_q_learning, please put agent_a_deep_q_learning.pth into weights directory.
 
 # Photos
+
+__4-by-4 field photo__
+
+Please print out this and use it as a 4-by-4-field.
+
+[4-by-4.pdf](https://github.com/PotatoPotato12345678/TTT/files/14005510/4-by-4.pdf)
 
 __arrangement__
 
